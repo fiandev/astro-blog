@@ -1,0 +1,28 @@
+---
+import Layout from "../../layouts/Base.astro";
+import { createTranslator } from "../../locales";
+import { marked } from 'marked';
+
+export async function getStaticPaths() {
+  return [{ params: { lang: "id" } }, { params: { lang: "en" } }];
+}
+const lang = Astro.params.lang;
+const __ = createTranslator(lang as "id" | "en");
+
+const content = marked(__('Terms of Service Content'));
+---
+
+<Layout title={__("Terms of Service Title")}>
+  <!-- Hero Section -->
+  <div class="text-center mb-12">
+    <h2 class="text-4xl font-extrabold text-gray-900 dark:text-white mb-4">
+      {__("Terms of Service Title")}
+    </h2>
+  </div>
+
+  <!-- Content Sections -->
+  <div class="max-w-4xl mx-auto space-y-8">
+    <div class="prose prose-lg dark:prose-invert mx-auto text-lg leading-relaxed text-gray-700 dark:text-gray-200" set:html={content}>
+    </div>
+  </div>
+</Layout>

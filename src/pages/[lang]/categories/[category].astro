@@ -40,6 +40,14 @@ const __ = createTranslator(lang as "id" | "en");
 
 // Helper untuk menjaga link tetap berada di bahasa yang sama
 const localLink = (path: string) => `/${lang}${path}`;
+
+const formatDate = (date: Date) => {
+  return new Date(date).toLocaleDateString("id-ID", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+};
 ---
 
 <Layout title={`Category: ${categoryName}`}>
@@ -53,75 +61,72 @@ const localLink = (path: string) => `/${lang}${path}`;
         >
           {categoryName}
         </h1>
-        <p class="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-          {__("Category")}: {categoryName}
-        </p>
       </div>
     </section>
 
-    <section>
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-8">
-        {
-          posts && posts.length > 0 ? (
-            posts.map((post, index) => (
-              <div
-                class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden transform hover:-translate-y-1.5 transition-transform duration-300 border border-gray-100 dark:border-gray-700"
-                data-aos="fade-up"
-                data-aos-delay={(index % 2) * 100}
-              >
-                <a href={localLink(`/blog/${post.data.slug}`)}>
-                  <img
-                    class="w-full h-48 object-cover"
-                    src={post.data.heroImage?.src || "/placeholder.jpg"}
-                    alt={post.data.title}
-                    width="400"
-                    height="300"
-                    loading="lazy"
-                  />
-                </a>
-                <div class="p-6 flex flex-col gap-4">
-                  <h4 class="mt-2 font-bold text-xl line-clamp-3 h-24 overflow-hidden text-gray-900 dark:text-white leading-tight hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors">
-                    <a href={localLink(`/blog/${post.data.slug}`)}>
-                      {post.data.title}
-                    </a>
-                  </h4>
-
-                  <div class="flex items-center gap-2 overflow-scroll text-xs whitespace-nowrap scrollbar-hide">
-                    {post.data.categories?.map((cat) => (
-                      <a
-                        href={localLink(`/categories/${createSlug(cat)}`)}
-                        class="h-6 flex items-center justify-center text-teal-800 dark:text-teal-200 capitalize hover:text-teal-800/60 dark:hover:text-teal-200/60 transition-colors bg-teal-200/40 dark:bg-teal-800/40 rounded-full py-2 px-4"
-                      >
-                        {cat}
+    <div class="grid grid-cols-1 lg:grid-cols-3 lg:gap-12">
+      <main class="lg:col-span-2">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-8">
+          {
+            posts && posts.length > 0 ? (
+              posts.map((post, index) => (
+                <div
+                  class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden transform hover:-translate-y-1.5 transition-transform duration-300 border border-gray-100 dark:border-gray-700"
+                  data-aos="fade-up"
+                  data-aos-delay={(index % 2) * 100}
+                >
+                  <a href={localLink(`/blog/${post.data.slug}`)}>
+                    <img
+                      class="w-full h-48 object-cover"
+                      src={post.data.heroImage?.src || "/placeholder.jpg"}
+                      alt={post.data.title}
+                      width="400"
+                      height="300"
+                      loading="lazy"
+                    />
+                  </a>
+                  <div class="p-6 flex flex-col gap-4">
+                    <h4 class="mt-2 font-bold text-xl line-clamp-3 h-24 overflow-hidden text-gray-900 dark:text-white leading-tight hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors">
+                      <a href={localLink(`/blog/${post.data.slug}`)}>
+                        {post.data.title}
                       </a>
-                    ))}
-                  </div>
+                    </h4>
 
-                  <p class="mt-2 text-gray-600 dark:text-gray-300 text-sm line-clamp-2">
-                    {post.data.description}
-                  </p>
-
-                  <div class="flex w-full items-center justify-between gap-4 mt-auto">
-                    <div class="text-xs text-gray-500 dark:text-gray-400">
-                      <span>{post.data.pubDate.toLocaleDateString(lang)}</span>
+                    <div class="flex items-center gap-2 overflow-scroll text-xs whitespace-nowrap scrollbar-hide">
+                      {post.data.categories?.map((cat) => (
+                        <a
+                          href={localLink(`/categories/${createSlug(cat)}`)}
+                          class="h-6 flex items-center justify-center text-teal-800 dark:text-teal-200 capitalize hover:text-teal-800/60 dark:hover:text-teal-200/60 transition-colors bg-teal-200/40 dark:bg-teal-800/40 rounded-full py-2 px-4"
+                        >
+                          {cat}
+                        </a>
+                      ))}
                     </div>
-                    <div class="text-xs text-gray-500 dark:text-gray-400">
-                      5 min {__("read")}
+
+                    <p class="mt-2 text-gray-600 dark:text-gray-300 text-sm line-clamp-2">
+                      {post.data.description}
+                    </p>
+
+                    <div class="flex w-full items-center justify-between gap-4 mt-auto">
+                      <div class="text-xs text-gray-500 dark:text-gray-400">
+                        <span>{formatDate(post.data.pubDate)}</span>
+                      </div>
+                      <div class="text-xs text-gray-500 dark:text-gray-400">
+                        {post.data.read_time} read
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))
-          ) : (
-            <div class="col-span-2 text-center py-12">
-              <p class="text-gray-600 dark:text-gray-300 text-lg">
+              ))
+            ) : (
+              <p class="text-gray-600 dark:text-gray-300 col-span-2">
                 {__("No posts available.")}
               </p>
-            </div>
-          )
-        }
-      </div>
-    </section>
+            )
+          }
+        </div>
+      </main>
+    </div>
 
     <div class="mt-12 text-center">
       <a

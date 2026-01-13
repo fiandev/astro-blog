@@ -45,12 +45,18 @@ const isActive = (path: string) => {
         >
           {__("Home")}
         </a>
-        <a
-          href={localLink("blog")}
-          class={`transition-colors ${isActive("blog") ? "text-indigo-600 dark:text-indigo-400 font-semibold" : "text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"}`}
-        >
-          {__("Blog")}
-        </a>
+         <a
+           href={localLink("blog")}
+           class={`transition-colors ${isActive("blog") ? "text-indigo-600 dark:text-indigo-400 font-semibold" : "text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"}`}
+         >
+           {__("Blog")}
+         </a>
+         <a
+           href={localLink("about")}
+           class={`transition-colors ${isActive("about") ? "text-indigo-600 dark:text-indigo-400 font-semibold" : "text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"}`}
+         >
+           {__("About")}
+         </a>
 
         {/* Theme Toggle */}
         <div class="relative">
@@ -208,12 +214,18 @@ const isActive = (path: string) => {
       >
         {__("Home")}
       </a>
-      <a
-        href={localLink("blog")}
-        class={`block px-4 py-3 rounded-lg text-base font-medium ${isActive("blog") ? "text-white bg-indigo-600" : "text-gray-700 dark:text-gray-200 hover:text-white hover:bg-indigo-600"} transition-colors`}
-      >
-        {__("Blog")}
-      </a>
+       <a
+         href={localLink("blog")}
+         class={`block px-4 py-3 rounded-lg text-base font-medium ${isActive("blog") ? "text-white bg-indigo-600" : "text-gray-700 dark:text-gray-200 hover:text-white hover:bg-indigo-600"} transition-colors`}
+       >
+         {__("Blog")}
+       </a>
+       <a
+         href={localLink("about")}
+         class={`block px-4 py-3 rounded-lg text-base font-medium ${isActive("about") ? "text-white bg-indigo-600" : "text-gray-700 dark:text-gray-200 hover:text-white hover:bg-indigo-600"} transition-colors`}
+       >
+         {__("About")}
+       </a>
     </div>
   </div>
 </header>

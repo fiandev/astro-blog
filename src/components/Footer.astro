@@ -1,5 +1,16 @@
 ---
 import { SITE_TITLE } from "../consts";
+import { createTranslator } from "../locales";
+
+const { lang } = Astro.params;
+const currentLang = lang || "en";
+const __ = createTranslator(currentLang as "id" | "en");
+
+// Helper untuk link internal agar selalu membawa prefix bahasa
+const localLink = (path: string) => {
+  const cleanPath = path.startsWith("/") ? path.slice(1) : path;
+  return `/${currentLang}/${cleanPath}`;
+};
 ---
 
 <footer
@@ -16,19 +27,19 @@ import { SITE_TITLE } from "../consts";
       </p>
       <div class="flex space-x-6">
         <a
-          href="#"
+          href={localLink("privacy-policy")}
           class="text-sm text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-300 transition-colors"
-          >Privacy Policy</a
+          >{__("Privacy Policy")}</a
         >
         <a
-          href="#"
+          href={localLink("terms-of-service")}
           class="text-sm text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-300 transition-colors"
-          >Terms of Service</a
+          >{__("Terms of Service")}</a
         >
         <a
-          href="#"
+          href={localLink("disclaimer")}
           class="text-sm text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-300 transition-colors"
-          >Disclaimer</a
+          >{__("Disclaimer")}</a
         >
       </div>
     </div>
