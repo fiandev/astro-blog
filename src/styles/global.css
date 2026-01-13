@@ -1,155 +1,369 @@
-/*
-  The CSS in this style tag is based off of Bear Blog's default CSS.
-  https://github.com/HermanMartinus/bearblog/blob/297026a877bc2ab2b3bdfbd6b9f7961c350917dd/templates/styles/blog/default.css
-  License MIT: https://github.com/HermanMartinus/bearblog/blob/master/LICENSE.md
- */
+@import "tailwindcss";
+
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap");
 
 :root {
-	--accent: #2337ff;
-	--accent-dark: #000d8a;
-	--black: 15, 18, 25;
-	--gray: 96, 115, 159;
-	--gray-light: 229, 233, 240;
-	--gray-dark: 34, 41, 57;
-	--gray-gradient: rgba(var(--gray-light), 50%), #fff;
-	--box-shadow:
-		0 2px 6px rgba(var(--gray), 25%), 0 8px 24px rgba(var(--gray), 33%), 0 16px 32px
-		rgba(var(--gray), 33%);
-}
-@font-face {
-	font-family: "Atkinson";
-	src: url("/fonts/atkinson-regular.woff") format("woff");
-	font-weight: 400;
-	font-style: normal;
-	font-display: swap;
-}
-@font-face {
-	font-family: "Atkinson";
-	src: url("/fonts/atkinson-bold.woff") format("woff");
-	font-weight: 700;
-	font-style: normal;
-	font-display: swap;
-}
-body {
-	font-family: "Atkinson", sans-serif;
-	margin: 0;
-	padding: 0;
-	text-align: left;
-	background: linear-gradient(var(--gray-gradient)) no-repeat;
-	background-size: 100% 600px;
-	word-wrap: break-word;
-	overflow-wrap: break-word;
-	color: rgb(var(--gray-dark));
-	font-size: 20px;
-	line-height: 1.7;
-}
-main {
-	width: 720px;
-	max-width: calc(100% - 2em);
-	margin: auto;
-	padding: 3em 1em;
-}
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-	margin: 0 0 0.5rem 0;
-	color: rgb(var(--black));
-	line-height: 1.2;
-}
-h1 {
-	font-size: 3.052em;
-}
-h2 {
-	font-size: 2.441em;
-}
-h3 {
-	font-size: 1.953em;
-}
-h4 {
-	font-size: 1.563em;
-}
-h5 {
-	font-size: 1.25em;
-}
-strong,
-b {
-	font-weight: 700;
-}
-a {
-	color: var(--accent);
-}
-a:hover {
-	color: var(--accent);
-}
-p {
-	margin-bottom: 1em;
-}
-.prose p {
-	margin-bottom: 2em;
-}
-textarea {
-	width: 100%;
-	font-size: 16px;
-}
-input {
-	font-size: 16px;
-}
-table {
-	width: 100%;
-}
-img {
-	max-width: 100%;
-	height: auto;
-	border-radius: 8px;
-}
-code {
-	padding: 2px 5px;
-	background-color: rgb(var(--gray-light));
-	border-radius: 2px;
-}
-pre {
-	padding: 1.5em;
-	border-radius: 8px;
-}
-pre > code {
-	all: unset;
-}
-blockquote {
-	border-left: 4px solid var(--accent);
-	padding: 0 0 0 20px;
-	margin: 0;
-	font-size: 1.333em;
-}
-hr {
-	border: none;
-	border-top: 1px solid rgb(var(--gray-light));
-}
-@media (max-width: 720px) {
-	body {
-		font-size: 18px;
-	}
-	main {
-		padding: 1em;
-	}
+  --color-primary-rgb: 79 70 229;
+  /* Default: Indigo 600 */
+  --color-secondary-rgb: 20 184 166;
+  /* Default: Teal 500 */
+  --color-accent-rgb: 14 165 233;
+  /* Default: Cyan 500 */
 }
 
-.sr-only {
-	border: 0;
-	padding: 0;
-	margin: 0;
-	position: absolute !important;
-	height: 1px;
-	width: 1px;
-	overflow: hidden;
-	/* IE6, IE7 - a 0 height clip, off to the bottom right of the visible 1px box */
-	clip: rect(1px 1px 1px 1px);
-	/* maybe deprecated but we need to support legacy browsers */
-	clip: rect(1px, 1px, 1px, 1px);
-	/* modern browsers, clip-path works inwards from each corner */
-	clip-path: inset(50%);
-	/* added line to stop words getting smushed together (as they go onto separate lines and some screen readers do not understand line feeds as a space */
-	white-space: nowrap;
+::-webkit-scrollbar {
+  display: none;
+}
+
+body {
+  font-family:
+    "Inter",
+    system-ui,
+    -apple-system,
+    sans-serif;
+  overflow-x: hidden;
+}
+
+/* Image optimization for layout stability */
+img[width][height] {
+  aspect-ratio: attr(width) / attr(height);
+}
+
+/* Image placeholders to prevent layout shift */
+.img-container {
+  position: relative;
+}
+
+.img-ratio-16-9 {
+  aspect-ratio: 16 / 9;
+}
+
+.img-ratio-4-3 {
+  aspect-ratio: 4 / 3;
+}
+
+.img-ratio-1-1 {
+  aspect-ratio: 1 / 1;
+}
+
+.img-placeholder {
+  background-color: #e5e7eb;
+}
+
+/* Optimize for loading */
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* Header styles for layout stability */
+/* header {
+  background-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(5px);
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  border-bottom: 1px solid rgba(200, 200, 200, 0.8);
+} */
+
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* Optimize font loading - This won't work with external URLs, relying on Google Fonts */
+
+/* Pagination Styles */
+.pagination {
+  display: flex;
+  justify-content: center;
+  list-style: none;
+  padding: 0;
+}
+
+.pagination li a,
+.pagination li span {
+  padding: 0.75rem 1rem;
+  margin: 0 0.25rem;
+  border-radius: 0.5rem;
+  color: #4a5568;
+  background-color: #fff;
+  border: 1px solid #e2e8f0;
+  transition: all 0.3s;
+}
+
+.pagination li.active span {
+  background-color: rgb(var(--color-primary-rgb));
+  color: #fff;
+  border-color: rgb(var(--color-primary-rgb));
+}
+
+.pagination li a:hover {
+  background-color: #f7fafc;
+}
+
+.pagination li.disabled span {
+  color: #a0aec0;
+  background-color: #f7fafc;
+}
+
+/* ---------- Article typography (modern, Medium-like) ---------- */
+
+/* Variables: tweak primary color, font scale, measure */
+.trix-content {
+  /* --content-max-width: 68ch; */
+  /* ideal readable measure */
+  /* --text-color: #334155; */
+  /* slightly softer than pure gray-800 */
+  --muted-color: #6b7280;
+  --accent: rgb(var(--color-primary-rgb, 59 130 246));
+  /* fallback to blue-500 if provided */
+  --lead-size: clamp(1.05rem, 1.5vw + 0.6rem, 1.125rem);
+  --base-size: clamp(1rem, 0.6vw + 0.9rem, 1.0625rem);
+  --scale-ratio: 1.28;
+  --radius: 0.5rem;
+  font-size: var(--base-size);
+  line-height: 1.65;
+  font-family:
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    "Noto Sans",
+    "Liberation Sans",
+    Arial,
+    sans-serif;
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+  padding: 0.75rem 1rem;
+  word-wrap: break-word;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Headings: clear hierarchy, tighter leading, consistent margins */
+.trix-content h1,
+.trix-content h2,
+.trix-content h3,
+.trix-content h4 {
+  /* darker for headings */
+  line-height: 1.15;
+  margin-top: 1.6em;
+  margin-bottom: 0.5em;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  scroll-margin-top: 2.5rem;
+}
+
+/* Fluid sizes using modular scale */
+.trix-content h1 {
+  font-size: calc(var(--base-size) * var(--scale-ratio) * var(--scale-ratio));
+}
+
+/* approx 3 steps */
+.trix-content h2 {
+  font-size: calc(var(--base-size) * var(--scale-ratio) * 1);
+}
+
+.trix-content h3 {
+  font-size: calc(var(--base-size) * var(--scale-ratio) * 0.8);
+}
+
+.trix-content h4 {
+  font-size: calc(var(--base-size) * 0.95);
+}
+
+/* Lead paragraph (first paragraph highlight) */
+.trix-content p.lead,
+.trix-content > p:first-of-type.lead {
+  font-size: var(--lead-size);
+  margin-bottom: 1.25em;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+/* Paragraphs: comfortable spacing */
+.trix-content p {
+  margin: 0 0 1.15em 0;
+  widows: 2;
+  orphans: 2;
+}
+
+/* Lists */
+.trix-content ol {
+  list-style-type: decimal;
+}
+
+.trix-content ul {
+  list-style-type: disc;
+}
+
+.trix-content ul,
+.trix-content ol {
+  margin: 0 0 1.15em 1.4rem;
+  padding: 0;
+}
+
+.trix-content li {
+  margin-bottom: 0.45em;
+}
+
+/* Blockquote: subtle card-like style */
+.trix-content blockquote {
+  margin: 1.15em 0;
+  padding: 0.8em 1em;
+  border-left: 0.35rem solid color-mix(in srgb, var(--accent) 30%, white);
+  background: color-mix(in srgb, #f8fafc 88%, var(--accent) 2%);
+  color: var(--muted-color);
+  border-radius: 0.375rem;
+  font-style: normal;
+}
+
+/* Code blocks and inline code */
+.trix-content pre {
+  margin: 1.1em 0;
+  padding: 1rem;
+  border-radius: var(--radius);
+  background: #0f1724;
+  /* dark panel */
+  color: #e6eef8;
+  overflow: auto;
+  font-family:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New",
+    monospace;
+  font-size: 0.92em;
+  line-height: 1.45;
+  box-shadow: 0 6px 18px rgba(15, 23, 36, 0.15);
+}
+
+/* Inline code */
+.trix-content code {
+  font-family:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace;
+  font-size: 0.92em;
+  background: #f3f4f6;
+  color: #0f1724;
+  padding: 0.18em 0.4em;
+  border-radius: 0.3125rem;
+}
+
+/* Prevent double background inside pre > code */
+.trix-content pre code {
+  background: transparent;
+  padding: 0;
+}
+
+/* Tables: clean, airy */
+.trix-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1em 0;
+  font-size: 0.95em;
+  overflow: auto;
+  display: block;
+}
+
+.trix-content th,
+.trix-content td {
+  padding: 0.7em 0.9em;
+  border-bottom: 1px solid #e6e9ef;
+  text-align: left;
+}
+
+.trix-content thead th {
+  background: transparent;
+  font-weight: 600;
+  color: #0b1220;
+}
+
+/* Links: subtle underline, accent color */
+.trix-content a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition:
+    color 160ms ease,
+    text-decoration-color 160ms ease;
+}
+
+.trix-content a:hover,
+.trix-content a:focus {
+  color: color-mix(in srgb, var(--accent) 80%, black 20%);
+  outline: none;
+}
+
+/* Images and figures: centered, with caption */
+.trix-content figure {
+  margin: 1.25em 0;
+  display: block;
+  text-align: center;
+}
+
+.trix-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+  display: inline-block;
+  box-shadow: 0 8px 24px rgba(15, 23, 36, 0.08);
+}
+
+.trix-content figcaption {
+  font-size: 0.9em;
+  color: var(--muted-color);
+  margin-top: 0.5em;
+}
+
+/* Pull-quote utility */
+.trix-content .pull-quote {
+  display: block;
+  margin: 1.25em 0;
+  padding: 0.9em 1.1em;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.6),
+    rgba(255, 255, 255, 0.4)
+  );
+  border-left: 3px solid var(--accent);
+  font-weight: 600;
+  color: #0f1724;
+  border-radius: 0.375rem;
+}
+
+/* Accessibility: reduce motion */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* Responsive tweaks for narrow screens */
+@media (max-width: 640px) {
+  .trix-content {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    --content-max-width: 100%;
+    font-size: 1rem;
+  }
+
+  .trix-content h1 {
+    font-size: 1.6rem;
+  }
+
+  .trix-content h2 {
+    font-size: 1.25rem;
+  }
+}
+
+/* Utility: subtle horizontal rule */
+.trix-content hr {
+  border: none;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #e6e9ef, transparent);
+  margin: 1.25em 0;
 }

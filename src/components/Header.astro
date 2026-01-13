@@ -1,85 +1,432 @@
 ---
-import { SITE_TITLE } from '../consts';
-import HeaderLink from './HeaderLink.astro';
+const { pathname } = Astro.url;
+const isActive = (path: string) =>
+  pathname === path || (path !== "/" && pathname.startsWith(path));
 ---
 
-<header>
-	<nav>
-		<h2><a href="/">{SITE_TITLE}</a></h2>
-		<div class="internal-links">
-			<HeaderLink href="/">Home</HeaderLink>
-			<HeaderLink href="/blog">Blog</HeaderLink>
-			<HeaderLink href="/about">About</HeaderLink>
-		</div>
-		<div class="social-links">
-			<a href="https://m.webtoo.ls/@astro" target="_blank">
-				<span class="sr-only">Follow Astro on Mastodon</span>
-				<svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32"
-					><path
-						fill="currentColor"
-						d="M11.19 12.195c2.016-.24 3.77-1.475 3.99-2.603.348-1.778.32-4.339.32-4.339 0-3.47-2.286-4.488-2.286-4.488C12.062.238 10.083.017 8.027 0h-.05C5.92.017 3.942.238 2.79.765c0 0-2.285 1.017-2.285 4.488l-.002.662c-.004.64-.007 1.35.011 2.091.083 3.394.626 6.74 3.78 7.57 1.454.383 2.703.463 3.709.408 1.823-.1 2.847-.647 2.847-.647l-.06-1.317s-1.303.41-2.767.36c-1.45-.05-2.98-.156-3.215-1.928a3.614 3.614 0 0 1-.033-.496s1.424.346 3.228.428c1.103.05 2.137-.064 3.188-.189zm1.613-2.47H11.13v-4.08c0-.859-.364-1.295-1.091-1.295-.804 0-1.207.517-1.207 1.541v2.233H7.168V5.89c0-1.024-.403-1.541-1.207-1.541-.727 0-1.091.436-1.091 1.296v4.079H3.197V5.522c0-.859.22-1.541.66-2.046.456-.505 1.052-.764 1.793-.764.856 0 1.504.328 1.933.983L8 4.39l.417-.695c.429-.655 1.077-.983 1.934-.983.74 0 1.336.259 1.791.764.442.505.661 1.187.661 2.046v4.203z"
-					></path></svg
-				>
-			</a>
-			<a href="https://twitter.com/astrodotbuild" target="_blank">
-				<span class="sr-only">Follow Astro on Twitter</span>
-				<svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32"
-					><path
-						fill="currentColor"
-						d="M5.026 15c6.038 0 9.341-5.003 9.341-9.334 0-.14 0-.282-.006-.422A6.685 6.685 0 0 0 16 3.542a6.658 6.658 0 0 1-1.889.518 3.301 3.301 0 0 0 1.447-1.817 6.533 6.533 0 0 1-2.087.793A3.286 3.286 0 0 0 7.875 6.03a9.325 9.325 0 0 1-6.767-3.429 3.289 3.289 0 0 0 1.018 4.382A3.323 3.323 0 0 1 .64 6.575v.045a3.288 3.288 0 0 0 2.632 3.218 3.203 3.203 0 0 1-.865.115 3.23 3.23 0 0 1-.614-.057 3.283 3.283 0 0 0 3.067 2.277A6.588 6.588 0 0 1 .78 13.58a6.32 6.32 0 0 1-.78-.045A9.344 9.344 0 0 0 5.026 15z"
-					></path></svg
-				>
-			</a>
-			<a href="https://github.com/withastro/astro" target="_blank">
-				<span class="sr-only">Go to Astro's GitHub repo</span>
-				<svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32"
-					><path
-						fill="currentColor"
-						d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"
-					></path></svg
-				>
-			</a>
-		</div>
-	</nav>
-</header>
-<style>
-	header {
-		margin: 0;
-		padding: 0 1em;
-		background: white;
-		box-shadow: 0 2px 8px rgba(var(--black), 5%);
-	}
-	h2 {
-		margin: 0;
-		font-size: 1em;
-	}
+<header
+  class="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm sticky top-0 z-40 border-b border-gray-200/80 dark:border-gray-700/80"
+>
+  <div class="container mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16">
+      {/* Logo */}
+      <div class="flex-shrink-0">
+        <a
+          href="/"
+          class="text-2xl font-bold text-indigo-600 dark:text-indigo-400"
+        >
+          <span class="text-black dark:text-white">Fian's</span> Blog
+        </a>
+      </div>
 
-	h2 a,
-	h2 a.active {
-		text-decoration: none;
-	}
-	nav {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-	}
-	nav a {
-		padding: 1em 0.5em;
-		color: var(--black);
-		border-bottom: 4px solid transparent;
-		text-decoration: none;
-	}
-	nav a.active {
-		text-decoration: none;
-		border-bottom-color: var(--accent);
-	}
-	.social-links,
-	.social-links a {
-		display: flex;
-	}
-	@media (max-width: 720px) {
-		.social-links {
-			display: none;
-		}
-	}
-</style>
+      {/* Desktop Navigation */}
+      <nav class="hidden md:flex md:items-center md:space-x-8">
+        <a
+          href="/"
+          class={`transition-colors ${pathname === "/" ? "text-indigo-600 dark:text-indigo-400" : "text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"}`}
+        >
+          Home
+        </a>
+        <a
+          href="/blog"
+          class={`transition-colors ${isActive("/blog") ? "text-indigo-600 dark:text-indigo-400" : "text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"}`}
+        >
+          Blogs
+        </a>
+
+        {/* Theme Toggle */}
+        <div class="relative">
+          <button
+            id="theme-toggle"
+            class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            aria-label="Toggle Theme"
+          >
+            <svg
+              id="theme-icon"
+              class="w-5 h-5 text-gray-700 dark:text-gray-300"
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+            </svg>
+          </button>
+        </div>
+
+        {/* Language Toggle */}
+        <div class="relative">
+          <button
+            id="lang-toggle"
+            class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            aria-label="Change Language"
+          >
+            <svg
+              class="w-5 h-5 text-gray-700 dark:text-gray-300"
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M5 8c-1.6 1-3 2.5-3 5 0 2 1 3 3 3 1 0 2.5-1 4-3 1 1 2 2 4 2 2 0 3-1 3-3 0-2-1-3-3-3-1 0-2 1-4 3-1-1-2-2-4-2z"
+              ></path>
+              <path d="M2 13h1"></path>
+            </svg>
+          </button>
+          <div
+            id="lang-dropdown"
+            class="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 hidden z-50"
+          >
+            <a
+              href="#"
+              data-lang="en"
+              class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 lang-option"
+            >
+              English
+            </a>
+            <a
+              href="#"
+              data-lang="id"
+              class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 lang-option"
+            >
+              Indonesia
+            </a>
+          </div>
+        </div>
+      </nav>
+
+      {/* Mobile Menu Toggle */}
+      <div class="md:hidden flex items-center space-x-2">
+        {/* Theme Toggle for Mobile */}
+        <button
+          id="theme-toggle-mobile"
+          class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+          aria-label="Toggle Theme"
+        >
+          <svg
+            id="theme-icon-mobile"
+            class="w-5 h-5 text-gray-700 dark:text-gray-300"
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+          </svg>
+        </button>
+
+        {/* Language Toggle for Mobile */}
+        <div class="relative">
+          <button
+            id="lang-toggle-mobile"
+            class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            aria-label="Change Language"
+          >
+            <svg
+              class="w-5 h-5 text-gray-700 dark:text-gray-300"
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M5 8c-1.6 1-3 2.5-3 5 0 2 1 3 3 3 1 0 2.5-1 4-3 1 1 2 2 4 2 2 0 3-1 3-3 0-2-1-3-3-3-1 0-2 1-4 3-1-1-2-2-4-2z"
+              ></path>
+              <path d="M2 13h1"></path>
+            </svg>
+          </button>
+          <div
+            id="lang-dropdown-mobile"
+            class="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 hidden z-50"
+          >
+            <a
+              href="#"
+              data-lang="en"
+              class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 lang-option-mobile"
+            >
+              English
+            </a>
+            <a
+              href="#"
+              data-lang="id"
+              class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 lang-option-mobile"
+            >
+              Indonesia
+            </a>
+          </div>
+        </div>
+
+        <button
+          id="mobile-menu-toggle"
+          class="text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400"
+          aria-label="Menu"
+        >
+          <svg
+            id="menu-icon"
+            class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 6h16M4 12h16m-7 6h7"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  {/* Mobile Menu */}
+  <div
+    id="mobile-menu"
+    class="md:hidden max-h-0 opacity-0 invisible overflow-hidden transition-all duration-300 ease-in-out bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm border-t border-gray-200 dark:border-gray-700 absolute top-16 left-0 right-0 z-50 shadow-lg"
+  >
+    <div class="px-4 py-5 space-y-1 h-[calc(100vh-4rem)]">
+      <a
+        href="/"
+        class={`block px-4 py-3 rounded-lg text-base font-medium ${pathname === "/" ? "text-white bg-indigo-600" : "text-gray-700 dark:text-gray-200 hover:text-white hover:bg-indigo-600"} transition-colors`}
+      >
+        Home
+      </a>
+      <a
+        href="/blog"
+        class={`block px-4 py-3 rounded-lg text-base font-medium ${isActive("/blog") ? "text-white bg-indigo-600" : "text-gray-700 dark:text-gray-200 hover:text-white hover:bg-indigo-600"} transition-colors`}
+      >
+        Blogs
+      </a>
+    </div>
+  </div>
+</header>
+
+{/* Cookie Consent Banner */}
+<div
+  id="cookie-consent"
+  class="fixed bottom-0 left-0 right-0 bg-gray-800 dark:bg-gray-900 text-white text-sm z-[9999] hidden py-4"
+>
+  <div
+    class="container mx-auto max-w-screen-xl px-4 py-3 flex flex-col sm:flex-row justify-between items-center gap-4"
+  >
+    <p class="sm:w-3/4 text-center sm:text-left">
+      We use cookies to enhance your experience. By continuing to visit this
+      site, you agree to our use of cookies.
+    </p>
+    <button
+      id="accept-cookies"
+      class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-md transition-colors w-full sm:w-auto text-center"
+    >
+      Accept
+    </button>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // Mobile Menu Toggle
+    const mobileMenuToggle = document.getElementById("mobile-menu-toggle");
+    const mobileMenu = document.getElementById("mobile-menu");
+    const menuIcon = document.getElementById("menu-icon");
+
+    if (mobileMenuToggle && mobileMenu && menuIcon) {
+      mobileMenuToggle.addEventListener("click", function () {
+        if (mobileMenu.classList.contains("max-h-0")) {
+          // Buka Menu
+          mobileMenu.classList.remove("max-h-0", "opacity-0", "invisible");
+          mobileMenu.classList.add("max-h-screen", "opacity-100", "visible");
+          // Icon Close (X)
+          menuIcon.innerHTML =
+            '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>';
+        } else {
+          // Tutup Menu
+          mobileMenu.classList.add("max-h-0", "opacity-0", "invisible");
+          mobileMenu.classList.remove("max-h-screen", "opacity-100", "visible");
+          // Icon Burger
+          menuIcon.innerHTML =
+            '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>';
+        }
+      });
+    }
+
+    // Theme Toggle
+    const themeToggle = document.getElementById("theme-toggle");
+    const themeToggleMobile = document.getElementById("theme-toggle-mobile");
+    const themeIcon = document.getElementById("theme-icon");
+    const themeIconMobile = document.getElementById("theme-icon-mobile");
+
+    function updateThemeIcon(theme: string) {
+      const darkIcon =
+        '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M22 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>';
+      const lightIcon = '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>';
+
+      if (theme === "dark") {
+        if (themeIcon) themeIcon.innerHTML = darkIcon;
+        if (themeIconMobile) themeIconMobile.innerHTML = darkIcon;
+      } else {
+        if (themeIcon) themeIcon.innerHTML = lightIcon;
+        if (themeIconMobile) themeIconMobile.innerHTML = lightIcon;
+      }
+    }
+
+    function getThemeFromCookie() {
+      const cookies = document.cookie.split(";");
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.startsWith("theme=")) {
+          return cookie.substring(6);
+        }
+      }
+      return null;
+    }
+
+    function initializeTheme() {
+      let themeFromCookie = getThemeFromCookie();
+      let themeFromLocalStorage = localStorage.getItem("theme");
+      let currentTheme = themeFromCookie || themeFromLocalStorage;
+
+      if (!currentTheme) {
+        currentTheme =
+          document.documentElement.getAttribute("data-theme") === "dark"
+            ? "dark"
+            : "light";
+      }
+
+      document.documentElement.setAttribute("data-theme", currentTheme);
+      localStorage.setItem("theme", currentTheme);
+      document.cookie = `theme=${currentTheme}; path=/; max-age=31536000`;
+      updateThemeIcon(currentTheme);
+
+      return currentTheme;
+    }
+
+    let currentTheme = initializeTheme();
+
+    function toggleTheme() {
+      currentTheme = currentTheme === "light" ? "dark" : "light";
+      document.documentElement.setAttribute("data-theme", currentTheme);
+      localStorage.setItem("theme", currentTheme);
+      updateThemeIcon(currentTheme);
+      document.cookie = `theme=${currentTheme}; path=/; max-age=31536000`;
+    }
+
+    if (themeToggle) themeToggle.addEventListener("click", toggleTheme);
+    if (themeToggleMobile)
+      themeToggleMobile.addEventListener("click", toggleTheme);
+
+    // Language Toggle
+    const langToggle = document.getElementById("lang-toggle");
+    const langDropdown = document.getElementById("lang-dropdown");
+    const langToggleMobile = document.getElementById("lang-toggle-mobile");
+    const langDropdownMobile = document.getElementById("lang-dropdown-mobile");
+    const langOptions = document.querySelectorAll(".lang-option");
+    const langOptionsMobile = document.querySelectorAll(".lang-option-mobile");
+
+    if (langToggle && langDropdown) {
+      langToggle.addEventListener("click", function (e) {
+        e.stopPropagation();
+        langDropdown.classList.toggle("hidden");
+        if (
+          langDropdownMobile &&
+          !langDropdownMobile.classList.contains("hidden")
+        ) {
+          langDropdownMobile.classList.add("hidden");
+        }
+      });
+    }
+
+    if (langToggleMobile && langDropdownMobile) {
+      langToggleMobile.addEventListener("click", function (e) {
+        e.stopPropagation();
+        langDropdownMobile.classList.toggle("hidden");
+        if (langDropdown && !langDropdown.classList.contains("hidden")) {
+          langDropdown.classList.add("hidden");
+        }
+      });
+    }
+
+    document.addEventListener("click", function (e) {
+      if (
+        langToggle &&
+        langDropdown &&
+        !langToggle.contains(e.target as Node) &&
+        !langDropdown.contains(e.target as Node)
+      ) {
+        langDropdown.classList.add("hidden");
+      }
+      if (
+        langToggleMobile &&
+        langDropdownMobile &&
+        !langToggleMobile.contains(e.target as Node) &&
+        !langDropdownMobile.contains(e.target as Node)
+      ) {
+        langDropdownMobile.classList.add("hidden");
+      }
+    });
+
+    function handleLanguageChange(lang: "id" | "en") {
+      document.cookie = `language=${lang}; path=/; max-age=31536000`;
+      const currentUrl = new URL(window.location.href);
+      currentUrl.searchParams.set("lang", lang);
+      window.location.href = currentUrl.toString();
+    }
+
+    langOptions.forEach((option) => {
+      option.addEventListener("click", function (e) {
+        e.preventDefault();
+        const lang = this.getAttribute("data-lang");
+        if (lang) handleLanguageChange(lang);
+        if (langDropdown) langDropdown.classList.add("hidden");
+      });
+    });
+
+    langOptionsMobile.forEach((option) => {
+      option.addEventListener("click", function (e) {
+        e.preventDefault();
+        const lang = this.getAttribute("data-lang");
+        if (lang) handleLanguageChange(lang);
+        if (langDropdownMobile) langDropdownMobile.classList.add("hidden");
+      });
+    });
+
+    // Cookie Consent
+    const cookieConsent = document.getElementById("cookie-consent");
+    const acceptCookies = document.getElementById("accept-cookies");
+    const cookiesAccepted = document.cookie
+      .split(";")
+      .some((item) => item.trim().startsWith("cookies_accepted="));
+
+    if (!cookiesAccepted && cookieConsent) {
+      cookieConsent.classList.remove("hidden");
+    }
+
+    if (acceptCookies && cookieConsent) {
+      acceptCookies.addEventListener("click", function () {
+        document.cookie = "cookies_accepted=true; path=/; max-age=31536000";
+        cookieConsent.classList.add("hidden");
+      });
+    }
+  });
+</script>

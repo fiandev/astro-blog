@@ -1,0 +1,166 @@
+---
+import { type CollectionEntry, getCollection, render } from "astro:content";
+import BlogPost from "../../../layouts/Base.astro";
+import { createTranslator } from "../../../locales";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog");
+  const languages = ["id", "en"];
+
+  return languages.flatMap((lang) =>
+    posts.map((post) => ({
+      params: { lang, slug: post.id },
+      props: post,
+    }))
+  );
+}
+
+type Props = CollectionEntry<"blog">;
+
+const { lang } = Astro.params;
+const post = Astro.props;
+const { Content } = await render(post);
+
+const __ = createTranslator(lang as "id" | "en");
+---
+
+<BlogPost {...post.data}>
+  <main class="py-12 px-4">
+    <article class="relative max-w-3xl mx-auto">
+      <div
+        id="floating-panel"
+        class="-translate-x-[90%] transition-transform duration-300 ease-out fixed left-0 top-1/2 p-4 backdrop-blur-sm lg:backdrop-blur-none rounded-lg bg-indigo-200/80 dark:bg-gray-800/80 dark:lg:bg-transparent lg:bg-transparent h-fit lg:absolute lg:top-0 lg:-left-32 lg:h-full lg:block"
+      >
+        <div
+          class="sticky top-32 flex flex-col items-center space-y-8 text-indigo-800 dark:text-indigo-200 lg:text-gray-500 dark:lg:text-gray-400"
+        >
+          <div class="flex flex-col items-center">
+            <svg
+              class="w-8 h-8"
+              xmlns="http://www.w3.org/2000/svg"
+              width="512"
+              height="512"
+              viewBox="0 0 512 512"
+            >
+              <path
+                fill="currentColor"
+                d="M235.094 17.844C60.934 66.176 249.458 163.35 184.72 198.22c-32.796 17.66-86.03 15.048-64.657-73.876c-106.688 86.723-75.665 284.316 48.093 349.5c-27.153-25.674-44.125-62.01-44.125-102.25c0-77.624 63.128-140.75 140.75-140.75c77.625 0 140.75 63.128 140.75 140.75c0 37.55-14.77 71.708-38.81 96.97c150.706-76.96 122.903-288.475 22.5-342.533c23.96 56.174 11.553 99.36-18.22 123.44C385.64 57.762 174.494 135.013 235.094 17.843zM264.78 249.53c-67.523 0-122.06 54.54-122.06 122.064s54.54 122.062 122.06 122.062c67.523 0 122.064-54.538 122.064-122.062c0-67.522-54.54-122.063-122.063-122.063zm0 53.782c46.983 0 85.283 38.3 85.283 85.282s-38.3 85.25-85.282 85.25c-46.98 0-85.25-38.268-85.25-85.25s38.27-85.28 85.25-85.28zm0 18.688c-36.88 0-66.56 29.712-66.56 66.594c0 36.88 29.68 66.562 66.56 66.562c36.882 0 66.595-29.68 66.595-66.562c0-36.88-29.712-66.594-66.594-66.594zm0 18.656c26.45 0 47.876 21.457 47.876 47.906c0 26.45-21.426 47.875-47.875 47.875c-26.447 0-47.905-21.425-47.905-47.875c0-8.41 2.19-16.315 6-23.187c1.84 12.334 12.466 21.813 25.313 21.813c14.14 0 25.593-11.486 25.593-25.625c0-8.62-4.25-16.236-10.78-20.875q.886-.032 1.78-.032z"
+              ></path>
+            </svg>
+            <span class="text-sm mt-1 text-gray-700 dark:text-gray-300"
+              >{post.data.views || 0}</span
+            >
+          </div>
+          <button
+            id="share-btn"
+            class="hover:text-primary dark:hover:text-primary transition-colors"
+          >
+            <svg
+              class="w-8 h-8"
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+            >
+              <path
+                fill="currentColor"
+                d="M10.25 3a.75.75 0 0 1 0 1.5h-3.5A2.25 2.25 0 0 0 4.5 6.75v10.5l.012.23A2.25 2.25 0 0 0 6.75 19.5h10.5a2.25 2.25 0 0 0 2.25-2.25v-2a.75.75 0 0 1 1.5 0v2A3.75 3.75 0 0 1 17.25 21H6.75a3.75 3.75 0 0 1-3.745-3.557L3 17.25V6.75A3.75 3.75 0 0 1 6.75 3zm4.687-.932a.75.75 0 0 1 .801.113l7 6a.75.75 0 0 1 .032 1.109l-7 6.75a.75.75 0 0 1-1.27-.54v-2.976c-1.014.064-1.97.273-2.94.769c-1.136.581-2.344 1.581-3.689 3.303l-.271.354a.75.75 0 0 1-1.35-.45c0-2.857.687-5.59 2.168-7.628c1.376-1.893 3.41-3.147 6.082-3.344V2.75l.008-.109a.75.75 0 0 1 .429-.573"
+              ></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="text-center mb-8">
+        <h1
+          class="text-2xl md:text-4xl font-bold text-gray-900 dark:text-white font-sans leading-tight"
+        >
+          {post.data.title}
+        </h1>
+      </div>
+
+      <img
+        src={post.data.heroImage?.src}
+        alt={post.data.title}
+        width="800"
+        height="450"
+        loading="lazy"
+        class="w-full h-auto max-h-96 bg-gray-300 dark:bg-gray-700 object-cover rounded-lg mb-8 shadow-lg"
+      />
+
+      <nav class="mb-6" aria-label="Breadcrumb">
+        <ol class="flex items-center space-x-2 text-sm">
+          <li>
+            <a
+              href="{ route('home') }"
+              class="text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors"
+              >{__("Home")}</a
+            >
+          </li>
+          <li class="text-gray-400 dark:text-gray-500">/</li>
+          <li>
+            <a
+              href="{ route('blog.index') }"
+              class="text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors"
+              >{__("Blogs")}</a
+            >
+          </li>
+          <li class="text-gray-400 dark:text-gray-500">/</li>
+          <li
+            class="text-gray-900 dark:text-white font-medium truncate max-w-xs md:max-w-md"
+          >
+            {post.data.title.slice(0, 30)}
+          </li>
+        </ol>
+      </nav>
+
+      <div
+        class="trix-content selection:bg-indigo-400/80 selection:text-slate-100 max-w-[68ch] md:max-w-fit"
+      >
+        <Content />
+      </div>
+
+      <div class="mt-12 flex flex-wrap gap-2">
+        {
+          post.data.categories?.map((category) => (
+            <a
+              href="{ route('categories.show', category) }"
+              class="bg-gray-200/60 dark:bg-gray-700/60 text-gray-800 dark:text-gray-200 text-sm font-medium px-4 py-1.5 rounded-full hover:bg-primary/20 dark:hover:bg-primary/20 transition-colors"
+            >
+              {category}
+            </a>
+          ))
+        }
+      </div>
+
+      <div
+        class="mt-16 p-6 bg-gray-200/80 dark:bg-gray-800/80 rounded-2xl flex flex-col sm:flex-row sm:items-center gap-6"
+      >
+        <img
+          src="{post.data.author?.gravatar}"
+          alt="Foto Profil Penulis"
+          width="80"
+          height="80"
+          loading="lazy"
+          class="w-20 h-20 rounded-full object-cover ring-4 ring-white"
+        />
+        <div class="flex-grow">
+          <p class="text-sm text-gray-500 dark:text-gray-400">
+            {__("Written by")}
+          </p>
+          <p class="text-xl font-bold text-gray-900 dark:text-white">
+            {post.data.author?.name}
+          </p>
+          <p class="mt-1 text-base text-gray-600 dark:text-gray-300">
+            {
+              post.data.author?.bio ??
+                __(
+                  "A passionate writer and developer who loves sharing stories through words."
+                )
+            }
+          </p>
+        </div>
+      </div>
+    </article>
+  </main>
+</BlogPost>

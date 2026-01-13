@@ -1,8 +1,11 @@
 ---
+import "../styles/global.css";
+
 import type { CollectionEntry } from "astro:content";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import { SITE_TITLE, SITE_DESCRIPTION } from "../consts"; // Buat file constants jika belum ada
+import GoogleAnalystics from "../components/includes/GoogleAnalystics.astro";
 
 type Props = CollectionEntry<"blog">["data"];
 
@@ -50,6 +53,8 @@ const schemaData = {
 <!doctype html>
 <html lang="id" class="scroll-smooth">
   <head>
+    <GoogleAnalystics />
+
     <!-- Global Metadata -->
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />

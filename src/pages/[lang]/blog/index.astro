@@ -1,0 +1,219 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "../../../layouts/Base.astro";
+import { createTranslator } from "../../../locales";
+
+export async function getStaticPaths() {
+  return [{ params: { lang: "id" } }, { params: { lang: "en" } }];
+}
+
+const lang = Astro.params.lang;
+const __ = createTranslator(lang as "id" | "en");
+
+const searchParams = Astro.url.searchParams;
+const searchQuery = searchParams.get("search")?.toLowerCase() || "";
+const categoryFilter = searchParams.get("category") || "";
+
+const allPosts = (await getCollection("blog")).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+
+const categories = new Set();
+allPosts.forEach((post) => {
+  post.data.categories?.forEach((category) => {
+    categories.add(category);
+  });
+});
+
+// Filter Posts based on Search Query and Category Selection
+const filteredPosts = allPosts.filter((post) => {
+  // Check if post matches category (if one is selected)
+  const matchesCategory = categoryFilter
+    ? post.data.categories?.includes(categoryFilter)
+    : true;
+
+  // Check if post matches search query (Title or Body)
+  const matchesSearch = searchQuery
+    ? post.data.title.toLowerCase().includes(searchQuery)
+    : true;
+
+  return matchesCategory && matchesSearch;
+});
+
+// Helper function to format dates
+const formatDate = (date: Date) => {
+  return new Date(date).toLocaleDateString(lang, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+};
+---
+
+<Layout title="Blog">
+  <main class="container mx-auto max-w-4xl py-12 px-4">
+    <div class="pb-6 border-b border-gray-200 dark:border-gray-700 mb-8">
+      <h1 class="text-4xl font-bold text-gray-900 dark:text-white font-sans">
+        {__("All Posts")}
+      </h1>
+      <p class="mt-2 text-lg text-gray-600 dark:text-gray-300 font-serif">
+        {__("Explore all stories, ideas, and inspirations we have shared.")}
+      </p>
+    </div>
+
+    <div class="mb-8 flex flex-col sm:flex-row gap-4">
+      <div class="flex-1">
+        <form method="GET" class="relative flex items-center gap-2">
+          {lang === "id" && <input type="hidden" name="lang" value="id" />}
+
+          <div class="w-3/4 relative">
+            <input
+              type="text"
+              name="search"
+              placeholder={__("Search for articles...")}
+              value={searchQuery}
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+            />
+            <button
+              type="submit"
+              class="absolute inset-y-0 right-4 text-gray-400 dark:text-gray-300 hover:text-primary dark:hover:text-primary"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+              </svg>
+            </button>
+          </div>
+
+          <select
+            name="category"
+            onchange="this.form.submit()"
+            class="px-4 py-2 w-1/4 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+          >
+            <option value="">{__("All Categories")}</option>
+            {
+              Array.from(categories).map((category) => (
+                <option
+                  value={category as string}
+                  selected={category === categoryFilter}
+                >
+                  {category}
+                </option>
+              ))
+            }
+          </select>
+        </form>
+      </div>
+    </div>
+
+    <div class="space-y-8 min-h-[calc(100vh-20rem)]">
+      {
+        filteredPosts.length > 0 ? (
+          filteredPosts.map((post) => (
+            <a href={`/blog/${post.data.slug}`} class="block group">
+              <article class="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 border border-gray-100 dark:border-gray-700">
+                <div class="flex flex-col md:flex-row">
+                  {/* Thumbnail Image */}
+                  <div class="w-full md:w-1/3">
+                    <img
+                      src={post.data.heroImage?.src || "/placeholder.jpg"}
+                      alt={post.data.title}
+                      width={post.data.heroImage?.width}
+                      height={post.data.heroImage?.height}
+                      loading="lazy"
+                      class="w-full h-48 md:h-full object-cover"
+                    />
+                  </div>
+
+                  {/* Content Info */}
+                  <div class="w-full md:w-2/3 p-6">
+                    <div class="flex items-center space-x-2 text-sm mb-3">
+                      {/* Author Info (Assuming hardcoded or strictly typed in frontmatter) */}
+                      <img
+                        src="/default-avatar.png"
+                        alt="Author"
+                        width="24"
+                        height="24"
+                        loading="lazy"
+                        class="w-6 h-6 rounded-full object-cover"
+                      />
+                      <span class="font-semibold text-gray-800 dark:text-gray-200">
+                        {/* Fallback author if not in frontmatter */}
+                        {post.data.author || "Admin"}
+                      </span>
+                      <span class="text-gray-400 dark:text-gray-500">•</span>
+                      <time
+                        datetime={post.data.pubDate.toISOString()}
+                        class="text-gray-500 dark:text-gray-400"
+                      >
+                        {formatDate(post.data.pubDate)}
+                      </time>
+                    </div>
+
+                    <h2 class="text-xl md:text-2xl font-bold font-sans text-gray-900 dark:text-white group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors mb-3 line-clamp-2">
+                      {post.data.title}
+                    </h2>
+
+                    <p class="text-gray-600 dark:text-gray-300 mb-4 line-clamp-2">
+                      {/* Display description or fallback to sliced body content */}
+                      {post.data.description + "..."}
+                    </p>
+
+                    <div class="flex flex-wrap items-center justify-between">
+                      <div class="flex flex-wrap gap-2">
+                        {post.data.categories?.map((categoryName) => (
+                          <span class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-2 py-1 rounded-full text-xs font-medium">
+                            {categoryName}
+                          </span>
+                        ))}
+                      </div>
+                      <div class="text-sm text-gray-500 dark:text-gray-400">
+                        {/* Static read time or calculated based on word count */}
+                        5 min {__("read")}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </article>
+            </a>
+          ))
+        ) : (
+          /* Empty State */
+          <div class="text-center py-12">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-16 w-16 mx-auto text-gray-300 dark:text-gray-500 mb-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+              />
+            </svg>
+            <h3 class="text-xl font-medium text-gray-900 dark:text-white mb-2">
+              {__("No articles found")}
+            </h3>
+            <p class="text-gray-600 dark:text-gray-400">
+              {__(
+                "We couldn't find any articles matching your search criteria."
+              )}
+            </p>
+          </div>
+        )
+      }
+    </div>
+  </main>
+</Layout>
