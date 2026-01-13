@@ -35,6 +35,7 @@ const page = {
 };
 
 const categories = new Set();
+
 allPosts.forEach((post) => {
   post.data.categories?.forEach((category) => {
     categories.add(category);
@@ -57,7 +58,7 @@ const author = {
   bio: me?.bio,
 };
 
-const locaelLink = (path: string) => {
+const localeLink = (path: string) => {
   const cleanPath = path.startsWith("/") ? path.slice(1) : path;
   return `/${lang}/${cleanPath}`;
 };
@@ -122,7 +123,7 @@ const locaelLink = (path: string) => {
       {
         posts.map((post) => (
           <a
-            href={localLink(`/blogs/${post.data.slug}`)}
+            href={localeLink(`/blogs/${post.data.slug}`)}
             class="block group post-item transition-all duration-300 ease-in-out"
             data-title={post.data.title.toLowerCase()}
             data-categories={post.data.categories?.join(",") || ""}

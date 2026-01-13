@@ -48,11 +48,12 @@ Banyak framework frontend lain menuntut kamu menulis banyak kode sebelum bisa me
 Pemula sering frustrasi dan merasa frontend itu ribet.
 
 Svelte mengambil pendekatan sebaliknya:  
- ➡️ **Tulis apa yang kamu ingin lihat.**  
+➡️ **Tulis apa yang kamu ingin lihat.**  
 ➡️ **Biarkan Svelte yang mengurus sisanya.**
 
 Kode counter di Svelte bisa sesederhana:
 
+```jsx
 <script>
   let count = 0;
 </script>
@@ -60,7 +61,7 @@ Kode counter di Svelte bisa sesederhana:
 <button on:click={() => count++}>
   {count}
 </button>
-  
+```
 
 Sudah. Selesai.  
  Inilah yang membuat pemula merasa, “Eh, aku bisa!”
@@ -133,9 +134,9 @@ Anak muda sekarang suka hal yang ringkas.
 
 File **.svelte** sangat cocok dengan gaya belajar Gen Z:
 
-*   Ada **<script>** untuk logic
+*   Ada **`<script>`** untuk logic
 *   Ada HTML untuk layout
-*   Ada **<style>** untuk tampilan
+*   Ada **`<style>`** untuk tampilan
 
 Semua di satu tempat. Semua tertata. Semua mudah.
 

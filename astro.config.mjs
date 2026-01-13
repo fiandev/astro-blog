@@ -11,13 +11,12 @@ export default defineConfig({
     mdx(),
     sitemap({
       i18n: {
-        defaultLocale: "id", // Locale default
+        defaultLocale: "id",
         locales: {
-          en: "en", // Sesuai folder src/pages/en
-          id: "id", // Sesuai folder src/pages/id
+          en: "en",
+          id: "id",
         },
       },
-      // Hapus halaman redirect root dari sitemap (opsional)
       filter: (page) => page !== "https://fiandev.com/",
     }),
   ],
