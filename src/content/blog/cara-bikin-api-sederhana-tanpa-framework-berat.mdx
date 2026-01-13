@@ -1,0 +1,441 @@
+---
+title: "Cara Bikin API Sederhana Tanpa Framework Berat"
+description: "Panduan lengkap dan friendly untuk belajar membuat API sederhana tanpa framework berat menggunakan Node.js native, Deno, dan Bun. Cocok untuk anak muda yang ingin memahami fundamental backend sekaligus meningkatkan personal branding melalui proyek teknis yang clean dan mudah dipelajari."
+pubDate: "Mon Dec 15 2025"
+heroImage: "../../assets/blog-images/01KC8Y0QJZRR0CKMA2QAEPHKB7.jpg"
+slug: "cara-bikin-api-sederhana-tanpa-framework-berat"
+read_time: 10
+categories: ["edukasi","pemerograman","personal blog","sharing"]
+---
+
+
+# **Cara Bikin API Sederhana Tanpa Framework Berat**
+
+## **Pembukaan**
+
+Bikin API itu kadang terasa ribet, apalagi kalau yang kamu lihat di internet isinya selalu Express, NestJS, Fastify, Hono, dan kawan-kawan. Framework-framework itu powerful, tapi buat sebagian anak muda yang baru belajar backend atau lagi nyari bahan bikin portofolio yang clean dan mudah dijelaskan, mereka bisa terasa **terlalu berat**.
+
+Padahal, kenyataannya kamu bisa bikin API yang simple, cepat dipahami, dan cukup buat kebutuhan belajar—tanpa framework apa pun. Cukup pakai runtime bawaan seperti **Node.js native**, **Deno**, atau **Bun**. Tiga-tiganya sama-sama bisa bikin server HTTP dalam beberapa baris kode saja.
+
+Artikel ini bakal jadi panduan lengkap dan santai buat kamu yang pengin:
+
+*   Paham cara kerja HTTP secara dasar
+*   Bikin API kecil tanpa framework
+*   Punya skill yang kelihatan “engineer-minded” saat bikin portofolio
+*   Lebih ngerti cara kerja framework karena tahu fondasinya dulu
+
+Kita bakal bongkar langkah demi langkah dari konsep, contoh kode, cara jalanin, sampai tips personal branding buat nunjukin proyek kamu biar lebih menarik buat HR dan tech recruiter.
+
+Ayo mulai.
+
+## **Kenapa memilih tanpa framework berat**
+
+Sebelum nyemplung ke kodingan, kita perlu paham dulu: kenapa sih repot-repot bikin API tanpa framework? Bukannya Express itu gampang?
+
+Iya, Express gampang — tapi ngerti hal-hal _dasarnya_ itu jauh lebih penting.
+
+### **1\. Kamu paham HTTP secara fundamental**
+
+Kalau pakai framework, biasanya semua parsing, routing, dan response handling sudah dibereskan. Kamu tinggal panggil fungsi.
+
+Tapi di balik itu semua ada alur:
+
+*   Request diterima
+*   Dibaca header-nya
+*   Dibaca body-nya
+*   Ditentukan route-nya
+*   Dibuat response sesuai format
+
+Belajar pakai native server bikin kamu **benar-benar ngerti apa yang terjadi di bawah hood**.
+
+### **2\. Proyek kamu terlihat lebih teknis di mata recruiter**
+
+Kalau kamu bikin API tanpa framework, kamu bisa jelasin:
+
+> “Saya membangun API dari nol menggunakan runtime native agar memahami cara HTTP bekerja sebelum menggunakan framework.”
+
+Kalimat simple begitu menunjukkan kamu ngerti fondasi, bukan cuma copas tutorial.
+
+### **3\. Lebih ringan, lebih cepat dipahami, lebih sedikit dependency**
+
+Kadang kamu cuma butuh API buat:
+
+*   testing kecil
+*   bot Telegram
+*   service internal
+*   tugas kampus
+*   prototipe cepat
+*   belajar routing dari dasar
+
+Framework justru menambah layer yang nggak kamu butuhkan.
+
+### **4\. Cocok untuk runtime modern seperti Deno dan Bun**
+
+Deno dan Bun sudah punya **Web Standard API** built-in.  
+Artinya, bikin API itu literally cuma beberapa baris.
+
+Nanti kamu bakal lihat contohnya sendiri.
+
+## **Persiapan lingkungan**
+
+Sebelum nulis kode, pastikan kamu punya runtime yang akan kita pakai.
+
+### **Node.js**
+
+Cek versi:
+
+node -v
+  
+
+Minimal Node 18 supaya support fetch dan API modern.
+
+### **Deno**
+
+Install:
+
+curl -fsSL https://deno.land/install.sh | sh
+  
+
+Cek versi:
+
+deno -V
+  
+
+### **Bun**
+
+Install:
+
+curl -fsSL https://bun.sh/install | bash
+  
+
+Cek versi:
+
+bun -v
+  
+
+## **Konsep dasar HTTP yang perlu kamu pahami dulu**
+
+Sebelum bikin API, kamu harus ngerti empat hal simple:
+
+### **1\. Request**
+
+Data masuk ke server, berisi:
+
+*   Method (GET, POST, PUT, DELETE)
+*   URL
+*   Headers (Content-Type, Authorization, dll)
+*   Body (biasanya JSON)
+
+### **2\. Response**
+
+Server membalas dengan:
+
+*   Status code (200, 404, 500)
+*   Headers
+*   Body (JSON)
+
+### **3\. Routing**
+
+API memutuskan aksi berdasarkan method dan path.
+
+GET /hello
+POST /api/echo
+  
+
+### **4\. Parsing JSON**
+
+Runtime yang berbeda memberikan cara parsing body yang berbeda:
+
+*   Node.js native → manual dari stream
+*   Deno → **request.json()**
+*   Bun → **request.json()**
+
+Ini perbedaan yang bikin belajar jadi seru.
+
+# **Contoh 1 API sederhana dengan Node.js Native**
+
+Walaupun Node.js terkenal dengan Express, Node.js sebenarnya sudah punya modul **http** bawaan untuk bikin server simpel.
+
+Mari bikin dua endpoint:
+
+*   **GET /hello** → balas **{ message: "Hello World" }**
+*   **POST /api/echo** → reply dengan JSON yang dikirim user
+
+### **Kode lengkap Node.js (native)**
+
+Buat file: **server.js**
+
+const http = require("http");
+
+const server = http.createServer((req, res) => {
+  const { method, url } = req;
+
+  // Routing GET /hello
+  if (method === "GET" && url === "/hello") {
+    res.writeHead(200, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ message: "Hello World" }));
+    return;
+  }
+
+  // Routing POST /api/echo
+  if (method === "POST" && url === "/api/echo") {
+    let body = "";
+
+    req.on("data", chunk => {
+      body += chunk;
+    });
+
+    req.on("end", () => {
+      try {
+        const json = JSON.parse(body);
+
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ you\_sent: json }));
+      } catch (e) {
+        res.writeHead(400, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ error: "Invalid JSON" }));
+      }
+    });
+
+    return;
+  }
+
+  // default 404
+  res.writeHead(404, { "Content-Type": "application/json" });
+  res.end(JSON.stringify({ error: "Not found" }));
+});
+
+server.listen(3000, () => {
+  console.log("Server running on http://localhost:3000");
+});
+  
+
+### Menjalankan server
+
+node server.js
+  
+
+### Coba dengan curl
+
+curl http://localhost:3000/hello
+  
+
+Post JSON:
+
+curl -X POST http://localhost:3000/api/echo \\
+  -H "Content-Type: application/json" \\
+  -d '{"name":"Fian"}'
+  
+
+Simple dan jelas. Semua mekanisme HTTP dilakukan secara manual.
+
+# **Contoh 2 API sederhana dengan Deno**
+
+Deno sangat clean. API server-nya cuma satu fungsi:
+
+Deno.serve()
+  
+
+Deno sudah mendukung Web Standard API, jadi bikin API terasa seperti bikin server di Cloudflare Workers atau Bun.
+
+### **Kode lengkap Deno**
+
+Buat file: **server.ts**
+
+Deno.serve(async (req) => {
+  const url = new URL(req.url);
+
+  // GET /hello
+  if (req.method === "GET" && url.pathname === "/hello") {
+    return new Response(JSON.stringify({ message: "Hello from Deno" }), {
+      headers: { "Content-Type": "application/json" }
+    });
+  }
+
+  // POST /api/echo
+  if (req.method === "POST" && url.pathname === "/api/echo") {
+    const body = await req.json();
+    return new Response(JSON.stringify({ you\_sent: body }), {
+      headers: { "Content-Type": "application/json" }
+    });
+  }
+
+  return new Response(JSON.stringify({ error: "Not Found" }), {
+    status: 404,
+    headers: { "Content-Type": "application/json" }
+  });
+});
+  
+
+### Jalanin server
+
+deno run --allow-net server.ts
+  
+
+Deno butuh permission eksplisit, salah satu fitur keamanan uniknya.
+
+### Test curl
+
+curl http://localhost:8000/hello
+  
+
+Deno feels good. Kodenya pendek, clean, dan sangat modern.
+
+# **Contoh 3 API sederhana dengan Bun**
+
+Bun dirancang untuk performa tinggi dan DX yang cepat.
+
+API server-nya mirip Deno:
+
+Bun.serve()
+  
+
+### **Kode lengkap Bun**
+
+File: **server.js**
+
+Bun.serve({
+  port: 3000,
+  fetch(req) {
+    const url = new URL(req.url);
+
+    // GET /hello
+    if (req.method === "GET" && url.pathname === "/hello") {
+      return Response.json({ message: "Hello from Bun" });
+    }
+
+    // POST /api/echo
+    if (req.method === "POST" && url.pathname === "/api/echo") {
+      return req.json().then(body =>
+        Response.json({ you\_sent: body })
+      );
+    }
+
+    return new Response("Not Found", { status: 404 });
+  }
+});
+  
+
+### Jalanin server
+
+bun run server.js
+  
+
+### Test curl
+
+curl http://localhost:3000/hello
+  
+
+Bun paling cepat startup-nya, dan syntax-nya sangat clean.
+
+# **Fitur tambahan yang seru untuk dipelajari**
+
+Kalau kamu mau API-nya lebih “developer-like”, kamu bisa tambah fitur kecil berikut:
+
+### **Router mini**
+
+const routes = {
+  "GET /hello": () => Response.json({ ok: true })
+};
+
+// Pemakaian:
+// cari key berdasarkan method + path
+  
+
+### **Logger sederhana**
+
+console.log(req.method, req.url);
+  
+
+### **Middleware wrapper**
+
+Bisa bikin fungsi:
+
+function withLogging(handler) {
+  return async (req) => {
+    console.log(req.method, req.url);
+    return handler(req);
+  };
+}
+  
+
+### **Rate limiting dasar**
+
+Buat Map berisi timestamp per-IP. Sangat bagus untuk portofolio.
+
+# **Testing dan dokumentasi ringan**
+
+Testing paling mudah pakai curl atau httpie.
+
+Untuk dokumentasi:
+
+*   Buat README yang jelas
+*   Tambahkan contoh request / response
+*   Tambahkan cara menjalankan proyek
+*   Tambahkan screenshot terminal
+
+Ini hal kecil tapi bikin repo kamu terlihat jauh lebih rapi.
+
+# **Deployment minimal**
+
+Kamu bisa deploy ke:
+
+*   Deno Deploy → paling cocok untuk Deno
+*   Bun Deploy (bun.sh)
+*   Render
+*   Fly.io
+*   Railway
+
+Cukup set environment variable:
+
+PORT=8080
+  
+
+Pastikan aplikasi kamu membaca port dari sistem saat production.
+
+# **Best practices kecil untuk personal branding**
+
+Kalau kamu mau proyek ini beneran bikin HR notice kamu, lakukan hal berikut:
+
+### **1\. Tulis cerita singkat di README**
+
+Jelaskan kenapa kamu bikin API tanpa framework:
+
+> “Saya ingin memahami fundamental HTTP sebelum menggunakan framework modern.”
+
+Ini menunjukkan kamu engineer yang mau belajar, bukan cuma pakai tool.
+
+### **2\. Tambahkan diagram alur sederhana**
+
+Bisa pakai mermaid:
+
+flowchart LR
+Client --> Server --> JSON Response
+  
+
+### **3\. Buat demo URL**
+
+Biar bisa langsung dicoba recruiter.
+
+### **4\. Post di LinkedIn**
+
+Tulisan singkat seperti:
+
+> “Hari ini saya belajar bikin API dari nol tanpa framework. Seru banget memahami cara Node/Deno/Bun menangani HTTP secara native.”
+
+Konten seperti ini biasanya dapat engagement tinggi.
+
+# **Penutup**
+
+Kamu baru aja belajar membangun API dari nol tanpa framework, pakai tiga runtime berbeda: Node.js, Deno, dan Bun. Dengan memahami dasar-dasar HTTP dan mekanisme server native, kamu bakal jauh lebih siap memahami framework besar seperti Express, Fastify, Hono, atau NestJS.
+
+Selain itu, proyek seperti ini cocok banget untuk portofolio — simple, teknis, clean, dan menunjukkan kamu ngerti fundamental.
+
+Langkah selanjutnya bisa:
+
+*   Menambah autentikasi sederhana
+*   Menghubungkan API ke database kecil (SQLite)
+*   Membuat test otomatis
+*   Deploy API kamu dan share di media sosial profesional
+
+Kalau kamu butuh artikel lanjutan, tinggal bilang: siap kubuatin.

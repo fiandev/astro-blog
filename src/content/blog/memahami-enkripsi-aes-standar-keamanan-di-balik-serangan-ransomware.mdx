@@ -1,0 +1,43 @@
+---
+title: "Memahami Enkripsi AES, Standar Keamanan di Balik Serangan Ransomware"
+description: "Di era digital saat ini, keamanan data menjadi sebuah prioritas utama. Salah satu teknologi kunci yang berperan penting dalam melindungi informasi adalah enkripsi. "
+pubDate: "Fri Aug 29 2025"
+heroImage: "../../assets/blog-placeholder.jpg"
+slug: "memahami-enkripsi-aes-standar-keamanan-di-balik-serangan-ransomware"
+read_time: 3
+categories: ["backend developer","crypto","cryptography"]
+---
+
+
+​Di era digital saat ini, keamanan data menjadi sebuah prioritas utama. Salah satu teknologi kunci yang berperan penting dalam melindungi informasi adalah enkripsi. 
+
+Metode enkripsi yang sangat populer dan kuat adalah Advanced Encryption Standard (AES). Ironisnya, kekuatan enkripsi inilah yang juga dimanfaatkan oleh para pelaku kejahatan siber, terutama dalam serangan ransomware, untuk mengunci data para korbannya.
+
+## ​Bagaimana Cara Kerja Enkripsi AES?
+
+​AES adalah standar enkripsi dengan metode simetris, yang berarti kunci yang sama digunakan untuk proses enkripsi (mengunci) dan dekripsi (membuka). 
+
+Cara kerjanya adalah dengan mengubah data asli yang dapat dibaca (disebut plaintext) menjadi format acak yang tidak dapat dimengerti (disebut ciphertext).
+
+  
+​Proses pengacakan data ini tidak dilakukan secara sembarangan. AES menggunakan serangkaian langkah matematis yang sangat kompleks, melibatkan beberapa putaran substitusi (penggantian) dan permutasi (pengacakan posisi) pada data.
+
+Proses berlapis ini memastikan bahwa data yang sudah dienkripsi akan sangat sulit untuk dikembalikan ke bentuk aslinya tanpa memiliki kunci yang tepat.  
+​Keunggulan Utama Enkripsi AES
+
+​AES menjadi standar global bukan tanpa alasan. 
+
+Berikut adalah beberapa keunggulan utamanya:
+
+1.  ​Keamanan Tingkat Tinggi: AES dirancang untuk menjadi sangat kuat dan tahan terhadap berbagai jenis serangan siber yang mencoba membobol enkripsi.
+2.  Kecepatan dan Efisiensi: Meskipun prosesnya kompleks, AES dapat melakukan enkripsi dan dekripsi data dengan cepat, sehingga efisien untuk digunakan dalam berbagai aplikasi, mulai dari mengamankan pesan hingga melindungi file di hard drive.  
+    ​Standar Global: Karena telah diakui secara internasional, AES didukung oleh hampir semua platform dan perangkat lunak di dunia, membuatnya mudah untuk diimplementasikan.
+
+### ​Implementasi dalam Kode
+
+​Dalam praktiknya, pengembang dapat menggunakan berbagai pustaka (library) pemrograman untuk menerapkan enkripsi AES. Sebagai contoh, dalam bahasa JavaScript, pengembang bisa memanfaatkan library seperti crypto-js.
+
+  
+​Saat mengenkripsi data menggunakan AES, sebuah kunci rahasia yang unik akan digunakan. Untuk dapat membuka kembali data yang telah dienkripsi, kunci yang sama persis sering disebut sebagai "decryptor text" atau chiper text harus digunakan. 
+
+Inilah prinsip yang dimanfaatkan oleh ransomware: data korban dienkripsi dengan kunci yang hanya dimiliki oleh penyerang, dan kunci tersebut baru akan diberikan setelah korban membayar tebusan.

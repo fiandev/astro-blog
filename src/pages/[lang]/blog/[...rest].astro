@@ -1,0 +1,17 @@
+---
+export async function getStaticPaths() {
+  return [
+    { params: { lang: "id", rest: undefined } },
+    { params: { lang: "en", rest: undefined } },
+  ];
+}
+
+const { lang, rest }: any = Astro.params;
+
+const target =
+  Array.isArray(rest) && rest.length
+    ? `/${lang}/blogs/${rest.join("/")}`
+    : `/${lang}/blogs`;
+
+return Astro.redirect(target, 301);
+---

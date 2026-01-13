@@ -3,150 +3,188 @@ import { getCollection } from "astro:content";
 import Layout from "../../../layouts/Base.astro";
 import { createTranslator } from "../../../locales";
 import { createSlug } from "../../../utils/slug";
+import Pagination from "../../../components/Pagination.astro";
 
 export async function getStaticPaths() {
-  const posts = await getCollection("blog");
-  const allCategories = posts.flatMap((post) => post.data.categories || []);
-  const uniqueCategories = [...new Set(allCategories)];
-  const languages = ["id", "en"];
+    const posts = await getCollection("blog");
+    const allCategories = posts.flatMap((post) => post.data.categories || []);
+    const uniqueCategories = [...new Set(allCategories)];
+    const languages = ["id", "en"];
 
-  // Generate path untuk setiap kombinasi Bahasa + Kategori
-  return languages.flatMap((lang) => {
-    return uniqueCategories.map((category) => {
-      const categorySlug = createSlug(category as string);
+    // Generate path untuk setiap kombinasi Bahasa + Kategori
+    return languages.flatMap((lang) => {
+        return uniqueCategories.map((category) => {
+            const categorySlug = createSlug(category as string);
 
-      const filteredPosts = posts
-        .filter((post) => {
-          const postCats = post.data.categories || [];
-          const postSlugs = postCats.map((c) => createSlug(c));
-          return postSlugs.includes(categorySlug);
-        })
-        .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+            const filteredPosts = posts
+                .filter((post) => {
+                    const postCats = post.data.categories || [];
+                    const postSlugs = postCats.map((c: string) =>
+                        createSlug(c),
+                    );
+                    return postSlugs.includes(categorySlug);
+                })
+                .sort(
+                    (a, b) =>
+                        b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+                );
 
-      return {
-        params: { lang, category: categorySlug },
-        props: {
-          categoryName: category,
-          posts: filteredPosts,
-        },
-      };
+            return {
+                params: { lang, category: categorySlug },
+                props: {
+                    categoryName: category,
+                    posts: filteredPosts,
+                },
+            };
+        });
     });
-  });
 }
 
-const { categoryName, posts } = Astro.props;
+const { categoryName, posts: allPosts } = Astro.props;
 const { lang } = Astro.params;
 const __ = createTranslator(lang as "id" | "en");
+
+const PAGE_SIZE = 6;
+const total = allPosts.length;
+const lastPage = Math.ceil(total / PAGE_SIZE);
+
+const posts = allPosts.slice(0, PAGE_SIZE);
+
+const page = {
+  currentPage: 1,
+  lastPage,
+  total,
+  start: 0,
+  end: Math.min(PAGE_SIZE, total) - 1,
+  data: posts,
+  url: {
+    prev: null,
+    next: lastPage > 1 ? `/${lang}/categories/${Astro.params.category}/page/2` : null, // Assuming we create [category]/page/[page]
+  },
+};
 
 // Helper untuk menjaga link tetap berada di bahasa yang sama
 const localLink = (path: string) => `/${lang}${path}`;
 
 const formatDate = (date: Date) => {
-  return new Date(date).toLocaleDateString("id-ID", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+    return new Date(date).toLocaleDateString("id-ID", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+    });
 };
 ---
 
 <Layout title={`Category: ${categoryName}`}>
-  <div
-    class="container mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-8 py-8 md:py-12"
-  >
-    <section class="mb-12" data-aos="fade-in">
-      <div class="text-center">
-        <h1
-          class="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-4"
-        >
-          {categoryName}
-        </h1>
-      </div>
-    </section>
-
-    <div class="grid grid-cols-1 lg:grid-cols-3 lg:gap-12">
-      <main class="lg:col-span-2">
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-8">
-          {
-            posts && posts.length > 0 ? (
-              posts.map((post, index) => (
-                <div
-                  class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden transform hover:-translate-y-1.5 transition-transform duration-300 border border-gray-100 dark:border-gray-700"
-                  data-aos="fade-up"
-                  data-aos-delay={(index % 2) * 100}
+    <div
+        class="container mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-8 py-8 md:py-12"
+    >
+        <section class="mb-12" data-aos="fade-in">
+            <div class="text-center">
+                <h1
+                    class="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-4"
                 >
-                  <a href={localLink(`/blog/${post.data.slug}`)}>
-                    <img
-                      class="w-full h-48 object-cover"
-                      src={post.data.heroImage?.src || "/placeholder.jpg"}
-                      alt={post.data.title}
-                      width="400"
-                      height="300"
-                      loading="lazy"
-                    />
-                  </a>
-                  <div class="p-6 flex flex-col gap-4">
-                    <h4 class="mt-2 font-bold text-xl line-clamp-3 h-24 overflow-hidden text-gray-900 dark:text-white leading-tight hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors">
-                      <a href={localLink(`/blog/${post.data.slug}`)}>
-                        {post.data.title}
-                      </a>
-                    </h4>
+                    {categoryName}
+                </h1>
+            </div>
+        </section>
 
-                    <div class="flex items-center gap-2 overflow-scroll text-xs whitespace-nowrap scrollbar-hide">
-                      {post.data.categories?.map((cat) => (
-                        <a
-                          href={localLink(`/categories/${createSlug(cat)}`)}
-                          class="h-6 flex items-center justify-center text-teal-800 dark:text-teal-200 capitalize hover:text-teal-800/60 dark:hover:text-teal-200/60 transition-colors bg-teal-200/40 dark:bg-teal-800/40 rounded-full py-2 px-4"
+        <div class="grid grid-cols-1 lg:grid-cols-3 lg:gap-12">
+            {
+                posts && posts.length > 0 ? (
+                    posts.map((post, index) => (
+                        <div
+                            class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden transform hover:-translate-y-1.5 transition-transform duration-300 border border-gray-100 dark:border-gray-700"
+                            data-aos="fade-up"
+                            data-aos-delay={(index % 2) * 100}
                         >
-                          {cat}
-                        </a>
-                      ))}
-                    </div>
+                            <a href={localLink(`/blogs/${post.data.slug}`)}>
+                                <img
+                                    class="w-full h-48 object-cover"
+                                    src={
+                                        post.data.heroImage?.src ||
+                                        "/placeholder.jpg"
+                                    }
+                                    alt={post.data.title}
+                                    width="400"
+                                    height="300"
+                                    loading="lazy"
+                                />
+                            </a>
+                            <div class="p-6 flex flex-col gap-4">
+                                <h4 class="mt-2 font-bold text-xl line-clamp-3 h-24 overflow-hidden text-gray-900 dark:text-white leading-tight hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors">
+                                    <a
+                                        href={localLink(
+                                            `/blogs/${post.data.slug}`,
+                                        )}
+                                    >
+                                        {post.data.title}
+                                    </a>
+                                </h4>
 
-                    <p class="mt-2 text-gray-600 dark:text-gray-300 text-sm line-clamp-2">
-                      {post.data.description}
+                                <div class="flex items-center gap-2 overflow-scroll text-xs whitespace-nowrap scrollbar-hide">
+                                    {post.data.categories?.map(
+                                        (cat: string) => (
+                                            <a
+                                                href={localLink(
+                                                    `/categories/${createSlug(cat)}`,
+                                                )}
+                                                class="h-6 flex items-center justify-center text-teal-800 dark:text-teal-200 capitalize hover:text-teal-800/60 dark:hover:text-teal-200/60 transition-colors bg-teal-200/40 dark:bg-teal-800/40 rounded-full py-2 px-4"
+                                            >
+                                                {cat}
+                                            </a>
+                                        ),
+                                    )}
+                                </div>
+
+                                <p class="mt-2 text-gray-600 dark:text-gray-300 text-sm line-clamp-2">
+                                    {post.data.description}
+                                </p>
+
+                                <div class="flex w-full items-center justify-between gap-4 mt-auto">
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">
+                                        <span>
+                                            {formatDate(post.data.pubDate)}
+                                        </span>
+                                    </div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">
+                                        {post.data.read_time} read
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    ))
+                ) : (
+                    <p class="text-gray-600 dark:text-gray-300 col-span-2">
+                        {__("No posts available.")}
                     </p>
+                )
+            }
+         </div>
 
-                    <div class="flex w-full items-center justify-between gap-4 mt-auto">
-                      <div class="text-xs text-gray-500 dark:text-gray-400">
-                        <span>{formatDate(post.data.pubDate)}</span>
-                      </div>
-                      <div class="text-xs text-gray-500 dark:text-gray-400">
-                        {post.data.read_time} read
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <p class="text-gray-600 dark:text-gray-300 col-span-2">
-                {__("No posts available.")}
-              </p>
-            )
-          }
-        </div>
-      </main>
-    </div>
+         <div class="mt-8">
+           <Pagination page={page} lang={lang} basePath={`/categories/${Astro.params.category}`} />
+         </div>
 
-    <div class="mt-12 text-center">
-      <a
-        href={localLink("/blog")}
-        class="inline-flex items-center px-6 py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-semibold rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-      >
-        <svg
-          class="w-4 h-4 mr-2"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-        </svg>
-        {__("Back to Blog")}
-      </a>
+         <div class="mt-12 text-center">
+             <a
+                 href={localLink("/blog")}
+                 class="inline-flex items-center px-6 py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-semibold rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+             >
+                 <svg
+                     class="w-4 h-4 mr-2"
+                     fill="none"
+                     stroke="currentColor"
+                     viewBox="0 0 24 24"
+                 >
+                     <path
+                         stroke-linecap="round"
+                         stroke-linejoin="round"
+                         stroke-width="2"
+                         d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                 </svg>
+                 {__("Back to Blog")}
+             </a>
+         </div>
     </div>
-  </div>
 </Layout>

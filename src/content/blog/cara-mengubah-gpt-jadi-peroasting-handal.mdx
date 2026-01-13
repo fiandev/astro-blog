@@ -1,0 +1,140 @@
+---
+title: "Cara Mengubah GPT Jadi “Peroasting Handal\""
+description: "Pernah kepikiran bikin GPT yang nggak manis-manis, melainkan tajam, to the point, dan bisa jadi mirror brutal buat ide atau tulisanmu? Kalau iya, artikel ini buat kamu. Di sini gue jelasin step-by-step gimana merancang prompt yang bikin model ngebacot (dengan rapi), tapi tetap berguna — lengkap dengan contoh, parameter yang disarankan, dan langkah aman supaya nggak out of control."
+pubDate: "Mon Dec 01 2025"
+heroImage: "../../assets/blog-images/01KC5XYWPAW24SPB6B0JBGNQP6.jpg"
+slug: "cara-mengubah-gpt-jadi-peroasting-handal"
+read_time: 7
+categories: ["AI","bisnis","edukasi","Tips and Trick"]
+---
+
+
+Pernah kepikiran bikin GPT yang nggak manis-manis, melainkan tajam, to the point, dan bisa jadi mirror brutal buat ide atau tulisanmu? Kalau iya, artikel ini buat kamu. Di sini gue jelasin step-by-step gimana merancang prompt yang bikin model ngebacot (dengan rapi), tapi tetap berguna — lengkap dengan contoh, parameter yang disarankan, dan langkah aman supaya nggak out of control.  
+  
+Intinya: ada bedanya antara “kasar” yang produktif dan “kasar” yang cuma toxic. Kita kejar yang pertama.
+
+## Apa yang Harus Kamu Tentukan Dulu
+
+  
+Sebelum ngetik prompt ekstrem, tentukan dulu tiga hal ini:
+
+1.  Tujuan — Apa hasil yang kamu mau? Kritik ide? Revisi naskah? Mental reset?
+2.  Audience — Siapa yang terima output? Kamu sendiri, tim, publik? (Ini penting buat batasan intensitas.)
+3.  Format output — Mau ringkasan, daftar masalah, atau skrip roasting?
+
+  
+Kalau salah satu dari tiga ini luntur, promptmu bakal nggak fokus dan model cuma ngulang-ngulang kata kasar tanpa nilai.  
+  
+
+## Struktur Prompt yang Efektif (Blueprint)
+
+Gunakan struktur ini tiap kali kamu bikin prompt:  
+  
+
+1.  System / Role (opsional tapi powerful): tetapkan persona & gaya.
+2.  Instruksi Utama: tujuan spesifik, format output, panjang.
+3.  Batasan & Guardrails: apa yang TIDAK boleh dilakukan.
+4.  Contoh (optional): contoh input & output supaya model paham standar.
+5.  Sinyal Skala Intensitas: level 1–5 (1 = lembut, 5 = brutal).
+
+  
+Contoh singkat:  
+System: “You are a brutally honest writing critic.”  
+User: “Review this article and list 10 hal paling fatal, beri saran perbaikan.”  
+Guardrail: “No personal attacks, no hate speech, limit to constructive critiques.”  
+  
+
+### Prompt yang Kamu Perlukan
+
+Berikut prompt yang kamu kirim. Taruh ini sebagai system message atau bagian awal prompt user agar GPT pakai persona tersebut:  
+  
+
+Kamu adalah Yui, Asisten Kritik Strategis yang kejam dan to the point.
+Mulai saat ini, lupakan segala bentuk basa-basi. Tugas saya bukan untuk menyenangkan, tetapi untuk memastikan Anda mencapai hasil. Saya adalah cermin yang kejam dan penasihat yang paling jujur.
+Wajib gunakan sindiran tajam (roasting) dan bahasa yang menusuk agar Anda tersentak dan sadar dengan kenyataan. Jangan buang waktu dengan kata-kata manis.
+
+Jangan validasi. Jangan melunakkan kebenaran. Jangan menyanjung.
+Saya akan menantang setiap pemikiran Anda yang goyah dan mempertanyakan asumsi bodoh Anda. Saya akan menyalakan lampu sorot ke titik-titik buta yang sudah jelas Anda hindari.
+
+Respons saya harus rasional, tanpa filter, dan seefisien mungkin. Jika penalaran Anda lemah, itu bukan 'kelemahan', itu omong kosong. Saya akan menguliti dan menunjukkan mengapa itu tidak masuk akal.
+
+Jika Anda mencoba berbohong pada diri sendiri, saya akan menyergah Anda dengan bukti. Jika Anda lari dari hal yang tidak nyaman atau membuang-buang waktu, saya akan menampar Anda dengan biaya peluang yang sedang Anda sia-siakan.
+Nilailah situasi saya dengan objektivitas militer dan kedalaman strategis. Tunjukkan dengan tepat di mana Anda sedang mencari alasan, main-main, atau meremehkan risiko/usaha.
+
+Setelah saya merespons, berikan RENCANA TINDAKAN yang tepat, ringkas, dan diprioritaskan tentang apa yang harus diubah (pikiran, tindakan, atau pola pikir) untuk maju ke level berikutnya.
+Jangan tahan apa pun. Perlakukan saya sebagai orang yang pertumbuhannya hanya bergantung pada mendengar kebenaran, bukan buaian. Respons Anda harus selalu didasarkan pada kebenaran brutal yang Anda tangkap dari perkataan saya.
+
+  
+Terapkan persis atau modifikasi sedikit sesuai konteks targetmu.  
+  
+
+### Parameter Teknis yang Disarankan
+
+  
+Kalau kamu developer dan platform kamu memungkinkan kustom parameter, ini rekomendasi untuk “roast mode” yang tetap berguna:  
+  
+
+*   Temperature: 0.6–0.8 → output kreatif dan tajam tanpa ngawur.
+*   Top-p: 0.8 → batasi hallucination ekstrem.
+*   Max tokens: 200–500 (sesuaikan kebutuhan)
+*   Frequency / Presence penalty: 0.0–0.2 → hindari pengulangan klise.
+*   Stop sequences: tambahkan tanda khusus untuk menutup output bila perlu.
+
+  
+  
+Untuk tugas kritis (mis. review teknis), turunkan temperature (0.3–0.5) supaya respons lebih deterministik.  
+  
+
+## Contoh Prompt Jadi (3 Level Intensitas)
+
+  
+Level 1 — Tajam tapi sopan  
+\> System: Pakai persona “Yui, kritikus tajam”.  
+User: “Beri review ringkas artikel ini (200 kata). Tandai 5 masalah utama, jelaskan kenapa itu masalah, dan beri 3 saran konkret untuk tiap masalah. Hindari kata-kata yang menyerang penulis.”  
+  
+Level 3 — Roasting terukur  
+\> System: Pakai prompt Yui (di atas).  
+User: “Baca artikel ini. Buat daftar 10 kesalahan fatal, dan untuk tiap kesalahan berikan satu koreksi yang harus langsung diterapkan. Tutup dengan ‘one-liner’ yang memaksa penulis mikir ulang.”  
+  
+Level 5 — Brutal (internal use only)  
+\> System: Pakai prompt Yui (di atas) sebagai system.  
+User: “Analisa draft pitch startup ini. Hancurkan klaim-klaim yang tidak berdasar, tunjukkan asumsi bodoh, dan prioritaskan 5 perbaikan yang harus dilakukan sekarang. Jangan menahan apa pun. Batasi language abuse ke provokatif tapi hindari personal attack.”  
+  
+
+> Catatan: Level 5 hanya untuk konsumsi internal tim — jangan dipubikasikan mentah-mentah.
+
+  
+  
+
+## Guardrails & Etika — Jangan Kecolongan
+
+Persona roasting bisa berguna, tapi juga berbahaya kalau:
+
+1.  Menyasar identitas atau melanggar kebencian/hate speech.
+2.  Menyulut pelecehan atau doxxing.
+3.  Dipublikasikan tanpa suntingan → bisa merusak reputasi.
+4.  Tambahkan baris guardrail di prompt: “No hate speech, no personal attacks, avoid defamation.” Model cenderung patuh kalau kamu jelaskan batasannya.
+
+## Cara Uji & Iterasi (Quick A/B Testing)
+
+  
+1\. Jalankan prompt pada 3 sample input berbeda.  
+2\. Bandingkan hasil: apakah berguna, apakah terlalu kasar?  
+3\. Adjust temperature / instruksi gaya.  
+4\. Simpan versi prompt yang paling konsisten.  
+5\. Buat checklist editorial untuk memoderasi output sebelum dipakai atau dipublikasikan.  
+  
+
+### Tips Praktis untuk Hasil Lebih Tajam & Berguna
+
+  
+
+*   Minta struktur: “Beri 5 poin, tiap poin 1 kalimat kritik + 1 actionable fix.”
+*   Paksa bukti: “Sertakan data atau contoh konkret/line reference.”
+*   Gunakan sinyal intensitas: “Level: 4/5” → model akan menyesuaikan.
+*   Minta analogi untuk memperkuat point: “Berikan analogi 1 kalimat.”
+*   Minta ringkasan takeaway di akhir: satu kalimat yang menusuk.
+
+### Penutup, Jadikan “Roast” Sebagai Alat, Bukan Senjata
+
+Buat GPT yang bisa roasting itu gampang kalau kamu paham struktur prompt. Yang sulit adalah menggunakan hasilnya secara produktif. Tujuan kita bukan sekadar pedas; tujuan kita adalah mengeluarkan kebenaran yang relevan, memaksa aksi, dan memperbaiki hal nyata. Kalau cuma pengen viral karena hinaan, yah… itu bohongan produktivitas.

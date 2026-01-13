@@ -1,0 +1,419 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "../../../layouts/Base.astro";
+import { createTranslator } from "../../../locales";
+import Pagination from "../../../components/Pagination.astro";
+
+export async function getStaticPaths() {
+  const langs = ["id", "en"];
+  const allPosts = await getCollection("blog");
+  const PAGE_SIZE = 10;
+  const total = allPosts.length;
+  const lastPage = Math.ceil(total / PAGE_SIZE);
+
+  const paths = [];
+  for (const lang of langs) {
+    for (let pageNum = 1; pageNum <= lastPage; pageNum++) {
+      const start = (pageNum - 1) * PAGE_SIZE;
+      const end = start + PAGE_SIZE;
+      const pageData = allPosts
+        .slice(start, end)
+        .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+      paths.push({
+        params: { lang, page: pageNum.toString() },
+        props: {
+          page: {
+            currentPage: pageNum,
+            lastPage,
+            total,
+            start,
+            end: Math.min(end, total) - 1,
+            data: pageData,
+            url: {
+              prev: pageNum > 1 ? `/${lang}/blogs/${pageNum - 1}` : null,
+              next: pageNum < lastPage ? `/${lang}/blogs/${pageNum + 1}` : null,
+            },
+          },
+        },
+      });
+    }
+  }
+  return paths;
+}
+
+const { page } = Astro.props;
+const { lang } = Astro.params;
+const __ = createTranslator(lang as "id" | "en");
+
+const generatePageNumbers = (current: number, total: number) => {
+  if (total <= 1) return [1];
+
+  const pages = new Set();
+  pages.add(1);
+  pages.add(total);
+
+  for (let i = current - 2; i <= current + 2; i++) {
+    if (i > 1 && i < total) pages.add(i);
+  }
+
+  const sorted: any[] = [...pages].sort((a: any, b: any) => a - b);
+  const result: any[] = [];
+
+  for (let i = 0; i < sorted.length; i++) {
+    result.push(sorted[i]);
+    if (sorted[i + 1] && sorted[i + 1] - sorted[i] > 1) {
+      result.push("...");
+    }
+  }
+
+  return result;
+};
+
+const allPosts = (await getCollection("blog")).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+
+const categories = new Set();
+allPosts.forEach((post) => {
+  post.data.categories?.forEach((category) => {
+    categories.add(category);
+  });
+});
+
+const formatDate = (date: Date) => {
+  return new Date(date).toLocaleDateString(lang, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+};
+
+const pageNumbers = generatePageNumbers(page.currentPage, page.lastPage);
+---
+
+<Layout title="Blog">
+  <main class="container mx-auto max-w-4xl py-12 px-4">
+    <div class="pb-6 border-b border-gray-200 dark:border-gray-700 mb-8">
+      <h1 class="text-4xl font-bold text-gray-900 dark:text-white font-sans">
+        {__("All Posts")}
+      </h1>
+      <p class="mt-2 text-lg text-gray-600 dark:text-gray-300 font-serif">
+        {__("Explore all stories, ideas, and inspirations we have shared.")}
+      </p>
+    </div>
+
+    <div class="mb-8 flex flex-col sm:flex-row gap-4">
+      <div class="flex-1">
+        <div class="relative flex items-center gap-2">
+          <div class="w-3/4 relative">
+            <input
+              type="text"
+              id="search-input"
+              placeholder={__("Search for articles...")}
+              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+            />
+            <div
+              class="absolute inset-y-0 right-4 flex items-center pointer-events-none text-gray-400 dark:text-gray-300"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+              </svg>
+            </div>
+          </div>
+
+          <select
+            id="category-select"
+            class="px-4 py-2 w-1/4 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+          >
+            <option value="">{__("All Categories")}</option>
+            {
+              Array.from(categories).map((category) => (
+                <option value={category as string}>{category}</option>
+              ))
+            }
+          </select>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="posts-grid" class="space-y-8 min-h-[calc(100vh-20rem)]">
+    {
+      page.data.map((post) => (
+        <a
+          href={`/${lang}/blogs/${post.data.slug}`}
+          class="block group post-item transition-all duration-300 ease-in-out"
+          data-title={post.data.title.toLowerCase()}
+          data-categories={post.data.categories?.join(",") || ""}
+        >
+          <article class="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 border border-gray-100 dark:border-gray-700">
+            <div class="flex flex-col md:flex-row">
+              <div class="w-full md:w-1/3">
+                <img
+                  src={post.data.heroImage?.src || "/placeholder.jpg"}
+                  alt={post.data.title}
+                  width={post.data.heroImage?.width}
+                  height={post.data.heroImage?.height}
+                  loading="lazy"
+                  class="w-full h-48 md:h-full object-cover"
+                />
+              </div>
+
+              <div class="w-full md:w-2/3 p-6">
+                <div class="flex items-center space-x-2 text-sm mb-3">
+                  <img
+                    src="/default-avatar.png"
+                    alt="Author"
+                    width="24"
+                    height="24"
+                    loading="lazy"
+                    class="w-6 h-6 rounded-full object-cover"
+                  />
+                  <span class="font-semibold text-gray-800 dark:text-gray-200">
+                    {post.data.author || "Admin"}
+                  </span>
+                  <span class="text-gray-400 dark:text-gray-500">•</span>
+                  <time
+                    datetime={post.data.pubDate.toISOString()}
+                    class="text-gray-500 dark:text-gray-400"
+                  >
+                    {formatDate(post.data.pubDate)}
+                  </time>
+                </div>
+
+                <h2 class="text-xl md:text-2xl font-bold font-sans text-gray-900 dark:text-white group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors mb-3 line-clamp-2">
+                  {post.data.title}
+                </h2>
+
+                <p class="text-gray-600 dark:text-gray-300 mb-4 line-clamp-2">
+                  {post.data.description}
+                </p>
+
+                <div class="flex flex-wrap items-center justify-between">
+                  <div class="flex flex-wrap gap-2">
+                    {post.data.categories?.map((categoryName) => (
+                      <span class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-2 py-1 rounded-full text-xs font-medium">
+                        {categoryName}
+                      </span>
+                    ))}
+                  </div>
+                  <div class="text-sm text-gray-500 dark:text-gray-400">
+                    5 min {__("read")}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+        </a>
+      ))
+    }
+
+    <div id="no-results" class="hidden text-center py-12">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-16 w-16 mx-auto text-gray-300 dark:text-gray-500 mb-4"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+        ></path>
+      </svg>
+      <h3 class="text-xl font-medium text-gray-900 dark:text-white mb-2">
+        {__("No articles found")}
+      </h3>
+      <p class="text-gray-600 dark:text-gray-400">
+        {__("We couldn't find any articles matching your search criteria.")}
+      </p>
+    </div>
+  </div>
+
+  <div class="mt-8">
+    <Pagination page={page} lang={lang} basePath="/blogs" />
+  </div>
+</Layout>
+
+<script>
+  function initFilter() {
+    const searchInput = document.getElementById("search-input");
+    const categorySelect = document.getElementById("category-select");
+    const posts = document.querySelectorAll(".post-item");
+    const noResults = document.getElementById("no-results");
+
+    if (!searchInput || !categorySelect) return;
+
+    function filterPosts() {
+      const query = (searchInput as HTMLInputElement).value.toLowerCase();
+      const category = (categorySelect as HTMLSelectElement).value;
+      let visibleCount = 0;
+
+      posts.forEach((post) => {
+        const el = post as HTMLElement;
+        const title = el.dataset.title || "";
+        const categories = el.dataset.categories
+          ? el.dataset.categories.split(",")
+          : [];
+
+        const matchesSearch = title.includes(query);
+        const matchesCategory =
+          category === "" || categories.includes(category);
+
+        if (matchesSearch && matchesCategory) {
+          el.style.display = "block";
+          visibleCount++;
+        } else {
+          el.style.display = "none";
+        }
+      });
+
+      if (noResults) {
+        noResults.classList.toggle("hidden", visibleCount > 0);
+      }
+
+      // Update URL without reload
+      const url = new URL(window.location.href);
+      if (query) url.searchParams.set("search", query);
+      else url.searchParams.delete("search");
+
+      if (category) url.searchParams.set("category", category);
+      else url.searchParams.delete("category");
+
+      window.history.replaceState({}, "", url);
+    }
+
+    searchInput.addEventListener("input", filterPosts);
+    categorySelect.addEventListener("change", filterPosts);
+
+    // Initial check from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has("search")) {
+      (searchInput as HTMLInputElement).value = urlParams.get("search")!;
+    }
+    if (urlParams.has("category")) {
+      (categorySelect as HTMLSelectElement).value = urlParams.get("category")!;
+    }
+
+    // Run once on load if params exist
+    if (urlParams.has("search") || urlParams.has("category")) {
+      filterPosts();
+    }
+  }
+
+  // Run on initial load
+  initFilter();
+
+  // Support for View Transitions (if you enable them later)
+  document.addEventListener("astro:page-load", initFilter);
+</script>
+
+{
+  page.lastPage > 1 && (
+    <nav
+      role="navigation"
+      aria-label="Pagination Navigation"
+      class="flex items-center justify-between py-4"
+    >
+      <div class="flex flex-col w-full sm:hidden">
+        <div class="flex justify-between flex-1">
+          {!page.url.prev ? (
+            <span class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-300 bg-white border border-gray-200 rounded-lg">
+              Previous
+            </span>
+          ) : (
+            <a
+              href={page.url.prev}
+              class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg"
+            >
+              Previous
+            </a>
+          )}
+
+          {page.url.next ? (
+            <a
+              href={page.url.next}
+              class="relative inline-flex items-center px-4 py-2 ml-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg"
+            >
+              Next
+            </a>
+          ) : (
+            <span class="relative inline-flex items-center px-4 py-2 ml-3 text-sm font-medium text-gray-300 bg-white border border-gray-200 rounded-lg">
+              Next
+            </span>
+          )}
+        </div>
+      </div>
+
+      <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+        <div>
+          <p class="text-sm text-gray-600">
+            Showing {page.start + 1} to {page.end + 1} of {page.total}
+          </p>
+        </div>
+
+        <div>
+          <span class="isolate inline-flex -space-x-px rounded-md shadow-sm">
+            {!page.url.prev ? (
+              <span class="relative inline-flex items-center px-2 py-2 text-gray-300 border border-gray-300 rounded-l-md">
+                ‹
+              </span>
+            ) : (
+              <a
+                href={page.url.prev}
+                class="relative inline-flex items-center px-2 py-2 text-gray-500 border border-gray-300 rounded-l-md"
+              >
+                ‹
+              </a>
+            )}
+
+            {pageNumbers.map((num: any) =>
+              num === "..." ? (
+                <span class="relative inline-flex items-center px-4 py-2 text-sm font-semibold border border-gray-300">
+                  ...
+                </span>
+              ) : num === page.currentPage ? (
+                <span class="relative z-10 inline-flex items-center px-4 py-2 text-sm font-semibold text-white border">
+                  {num}
+                </span>
+              ) : (
+                <a
+                  href={num === 1 ? `/${lang}/blogs` : `/${lang}/blogs/${num}`}
+                  class="relative inline-flex items-center px-4 py-2 text-sm font-semibold border border-gray-300"
+                >
+                  {num}
+                </a>
+              )
+            )}
+
+            {page.url.next ? (
+              <a
+                href={page.url.next}
+                class="relative inline-flex items-center px-2 py-2 text-gray-500 border border-gray-300 rounded-r-md"
+              >
+                ›
+              </a>
+            ) : (
+              <span class="relative inline-flex items-center px-2 py-2 text-gray-300 border border-gray-300 rounded-r-md">
+                ›
+              </span>
+            )}
+          </span>
+        </div>
+      </div>
+    </nav>
+  )
+}

@@ -1,40 +1,40 @@
 ---
-const { page } = Astro.props;
+const { page, lang, basePath } = Astro.props;
 
-// Helper untuk membuat array halaman (1, ..., 4, 5, 6, ..., 10)
 const generatePageNumbers = (current: number, total: number) => {
   if (total <= 1) return [1];
 
-  const center = [current - 2, current - 1, current, current + 1, current + 2];
-  const filteredCenter: any[] = center.filter((p) => p > 1 && p < total);
-  const includeThreeLeft = current === 5;
-  const includeThreeRight = current === total - 4;
-  const includeLeftDots = current > 5;
-  const includeRightDots = current < total - 4;
+  const pages = new Set();
+  pages.add(1);
+  pages.add(total);
 
-  if (includeThreeLeft) filteredCenter.unshift(2);
-  if (includeThreeRight) filteredCenter.push(total - 1);
+  for (let i = current - 2; i <= current + 2; i++) {
+    if (i > 1 && i < total) pages.add(i);
+  }
 
-  if (includeLeftDots) filteredCenter.unshift("...");
-  if (includeRightDots) filteredCenter.push("...");
+  const sorted: any[] = [...pages].sort((a: any, b: any) => a - b);
+  const result: any[] = [];
 
-  return [1, ...filteredCenter, total];
+  for (let i = 0; i < sorted.length; i++) {
+    result.push(sorted[i]);
+    if (sorted[i + 1] && sorted[i + 1] - sorted[i] > 1) {
+      result.push("...");
+    }
+  }
+
+  return result;
 };
 
-// Safety check: pastikan 'page' ada sebelum mengakses property-nya
-const pageNumbers = page
-  ? generatePageNumbers(page.currentPage, page.lastPage)
-  : [];
+const pageNumbers = generatePageNumbers(page.currentPage, page.lastPage);
 ---
 
 {
-  page && page.lastPage > 1 && (
+  page.lastPage > 1 && (
     <nav
       role="navigation"
       aria-label="Pagination Navigation"
       class="flex items-center justify-between py-4"
     >
-      {/* Mobile View */}
       <div class="flex flex-col w-full sm:hidden">
         <div class="flex justify-between flex-1">
           {!page.url.prev ? (
@@ -78,7 +78,6 @@ const pageNumbers = page
         </div>
       </div>
 
-      {/* Desktop View */}
       <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
         <div>
           <p class="text-sm text-gray-600 dark:text-gray-400">
@@ -103,7 +102,6 @@ const pageNumbers = page
             class="isolate inline-flex -space-x-px rounded-md shadow-sm bg-white dark:bg-gray-800"
             aria-label="Pagination"
           >
-            {/* Desktop Previous */}
             {!page.url.prev ? (
               <span class="relative inline-flex items-center px-2 py-2 text-gray-300 bg-white border border-gray-300 rounded-l-md cursor-not-allowed dark:bg-gray-800 dark:border-gray-600 dark:text-gray-600">
                 <span class="sr-only">Previous</span>
@@ -141,7 +139,6 @@ const pageNumbers = page
               </a>
             )}
 
-            {/* Numbers Loop */}
             {pageNumbers.map((num) => {
               if (num === "...") {
                 return (
@@ -160,7 +157,7 @@ const pageNumbers = page
                 </span>
               ) : (
                 <a
-                  href={num === 1 ? "/blog" : `/blog/${num}`}
+                  href={basePath ? (num === 1 ? `/${lang}${basePath}` : `/${lang}${basePath}/${num}`) : (num === 1 ? `/${lang}` : `/${lang}/page/${num}`)}
                   class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 bg-white border border-gray-300 hover:bg-[rgba(var(--color-primary-rgb),0.08)] hover:text-[rgb(var(--color-primary-rgb))] hover:border-[rgb(var(--color-primary-rgb))] focus:z-20 focus:outline-offset-0 transition duration-150 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white dark:hover:border-gray-500"
                 >
                   {num}
@@ -168,7 +165,6 @@ const pageNumbers = page
               );
             })}
 
-            {/* Desktop Next */}
             {page.url.next ? (
               <a
                 href={page.url.next}

@@ -1,0 +1,251 @@
+---
+title: "Pengalaman Mengatasi Downtime Saat Redeploy Laravel Project, Dari Chaos ke Zero-Downtime Deployment"
+description: "Ada satu hal yang selalu bikin jantung developer berdebar lebih kencang daripada chattingan sama crush: deploy ke production.
+
+Buat para developer, momen “push ke master → workflow jalan → aplikasi update” terlihat simpel. Tapi kenyataannya, deploy sering kali terasa seperti berjudi dengan nasib. Kadang lancar, kadang error, dan kadang… downtime"
+pubDate: "Thu Dec 11 2025"
+heroImage: "../../assets/blog-images/01KC5XQQKP8X9T09T3J9GZJB24.jpg"
+slug: "pengalaman-mengatasi-downtime-saat-redeploy-laravel-project-dari-chaos-ke-zero-downtime-deployment"
+read_time: 7
+categories: ["backend developer","edukasi","pemerograman","personal blog","sharing","sistem operasi"]
+---
+
+
+## Pengalaman Mengatasi Downtime Saat Redeploy Laravel Project, Dari Chaos ke Zero-Downtime Deployment
+
+## **Momen Paling Menegangkan Buat Developer**
+
+Ada satu hal yang selalu bikin jantung developer berdebar lebih kencang daripada chattingan sama crush: **deploy ke production**.
+
+Buat para developer, momen “push ke master → workflow jalan → aplikasi update” terlihat simpel. Tapi kenyataannya, deploy sering kali terasa seperti berjudi dengan nasib. Kadang lancar, kadang error, dan kadang… **downtime**.
+
+Downtime ini bukan cuma gangguan teknis — tapi pukulan mental.  
+ Website tiba-tiba tidak bisa diakses, user komplain, error log membludak, dan kamu duduk di depan terminal seperti:
+
+> “Lah ini kenapa… barusan masih normal…”
+
+Itulah fase yang aku alami beberapa waktu lalu ketika melakukan redeploy blog Laravel aku.  
+ Dan pengalaman itu menjadi pelajaran penting yang akhirnya mendorongku memperbaiki workflow deployment menjadi lebih profesional — bahkan hampir **zero downtime**.
+
+Artikel panjang ini adalah cerita lengkapnya.
+
+# **Ketika Pertama Kali Mengalami Downtime**
+
+Deploy sore itu awalnya biasa saja.  
+ Aku push commit kecil—hanya update UI ringan. GitHub Actions mulai berjalan, dan aku cuek sambil lanjut buka YouTube.
+
+Beberapa menit kemudian, aku coba buka blog.  
+ Tapi yang muncul malah:
+
+> **500 | Server Error**
+
+Hati langsung mencelos.  
+Aku cek lagi—masih error.  
+Aku buka terminal server, lihat log — ternyata error vendor tidak lengkap.
+
+Baru sadar:  
+ **Composer install sedang berjalan, dan user mengakses website saat vendor setengah jadi.**
+
+Inilah salah satu konsekuensi terbesar dari cara deploy lamaku.
+
+### **Apa yang sebenarnya terjadi?**
+
+Workflow YAML lamaku berjalan begini:
+
+1.  Archive dikirim ke server
+2.  Extract langsung ke folder production
+3.  Composer install dijalankan langsung di production
+4.  baru kemudian caching & migrate
+
+Masalahnya?
+
+*   Ketika **tar xzf** overwrite file **saat website sedang aktif**, beberapa file sempat hilang.
+*   Composer install belum selesai, tapi request sudah masuk.
+*   Vendor incomplete = Laravel error fatal.
+*   Website down hingga deploy selesai.
+
+Maintenance mode seharusnya membantu…  
+ Tapi Laravel masuk ke maintenance **setelah** file sudah diextract.  
+Keburu down duluan.
+
+Saat itu aku benar-benar mikir:
+
+> “Kalau blog kecil gini bisa down, gimana kalau nanti deploy aplikasi client? Bisa gawat.”
+
+Panik, malu, dan langsung belajar banyak hal dari insiden itu.
+
+# **Masalah dari Workflow Lama**
+
+Setelah menenangkan diri, aku audit YAML lama.  
+ Masalahnya cukup jelas.
+
+## **Extract ke Production**
+
+Ini seperti mengubah mesin mobil sambil mobil tetap berjalan. Mustahil tidak error.
+
+## **Composer Install di Production**
+
+Composer itu berat.  
+ Ketika vendor berubah saat aplikasi berjalan, error pasti muncul.
+
+## **Tidak Ada Staging**
+
+Build dan deploy dilakukan di folder yang sama.  
+ Parahnya lagi, user tetap akses folder itu.
+
+## **Maintenance Mode Terlambat**
+
+Maintenance-nya masuk _setelah_ overwrite terjadi.  
+Sudah tidak ada artinya.
+
+Singkatnya:
+
+> **Aku deploy langsung ke “rumah asli”, bukan ke “ruang kerja sementara”.**
+
+Ini kesalahan umum developer pemula — dan aku juga pernah melakukannya.
+
+# **Aha Moment — Waktu Menemukan Cara Zero Downtime**
+
+Setelah banyak baca, nonton tutorial DevOps, dan eksperimen, aku menemukan konsep yang menjawab semua masalah ini:
+
+## **Atomic Deployment**
+
+Prinsipnya simpel:
+
+*   Jangan sentuh production sampai semuanya benar-benar siap.
+*   Build di folder staging
+*   Test di staging
+*   Sinkronkan ke production dengan proses cepat (rsync)
+*   Production hanya menerima _versi final yang lengkap_
+
+Ketika paham ini, aku langsung sadar:
+
+> “Oh… pantes kenapa workflow lama bikin chaos. Aku build di tempat yang salah!”
+
+# **Membangun Workflow Deployment Baru**
+
+Aku mulai dari nol dan menyusun ulang YAML GitHub Actions.
+
+## **Staging Directory**
+
+Alih-alih extract ke production, file dikirim ke:
+
+/var/www/blog.fiandev.com-staging
+  
+
+Di sinilah semua:
+
+*   archive diextract
+*   composer install dijalankan
+*   permission diset
+*   .env disalin
+
+Production tetap aman.  
+ User tetap bisa akses website tanpa gangguan.
+
+## **Sync Menggunakan rsync**
+
+Setelah staging sudah siap, langkah berikutnya adalah menyalin hasil build ke production:
+
+rsync -a --delete --exclude '.env' STAGING/ PRODUCTION/
+  
+
+Rsync bekerja dalam milidetik — jauh lebih cepat daripada copy biasa atau extract langsung.
+
+Downtime? Hampir tidak ada.
+
+## **Permission**
+
+Setelah sync, permission diatur ulang supaya Laravel tidak error.
+
+## **Laravel Optimize**
+
+Semua cache dibuat setelah file final pindah, bukan sebelumnya.
+
+## **Migration dengan Guard**
+
+php artisan migrate || true
+  
+
+Jika ada migration yang sudah terpasang, workflow tidak gagal.
+
+## **Cleanup**
+
+Archive dibuang.
+
+Dengan ini semua, deploy menjadi proses yang:
+
+*   aman
+*   bersih
+*   stabil
+*   cepat
+
+# **Penyelamat yang Mengurangi Downtime Hingga Hampir Nol**
+
+Bagian YAML baru benar-benar mengubah semuanya.
+
+Dulu:
+
+*   downtime 10–30 detik
+*   user sempat lihat error
+*   vendor incomplete
+*   file overwritten
+
+Sekarang?
+
+*   downtime hampir tidak terasa
+*   production selalu konsisten
+*   composer berjalan di tempat aman
+*   rsync cepat sekali
+
+Setelah menguji beberapa kali, hasilnya memuaskan.  
+ Aku bisa deploy kapan saja tanpa deg-degan.
+
+# **Pelajaran Berharga dari Insiden Downtime**
+
+## **1\. Deploy Bukan Sekadar Push**
+
+Ini bukan proses trivial.  
+ Environment harus aman dan terkontrol.
+
+## **2\. Jangan Build di Production**
+
+Kesalahan klasik semua pemula.
+
+## **3\. Staging Wajib Kalau Mau Zero Downtime**
+
+Tidak ada jalan pintas lain.
+
+## **4\. Permission Itu Konsistensi**
+
+Salah permission = error fatal.
+
+## **5\. Error Adalah Guru Terbaik**
+
+Pengalaman buruk itu mahal…  
+ tapi justru itulah yang membuat developer berkembang.
+
+# **Penutup, Dari Downtime Memalukan Menjadi Deployment Profesional**
+
+Sekarang, proses deploy terasa seperti perjalanan upgrade skill.
+
+Dulu aku deploy dengan naïf dan berharap keberuntungan.  
+ Sekarang aku deploy dengan sistem, strategi, dan workflow yang aman.
+
+Dulu aku takut push ke production.  
+ Sekarang aku bisa deploy kapan saja tanpa anxiety.
+
+Masalah downtime itu memalukan, iya.  
+ Tapi justru dari rasa malu itulah aku belajar membuat pipeline yang lebih elegan, aman, dan profesional.
+
+Kalau kamu developer pemula, percayalah:
+
+*   Jangan takut salah.
+*   Jangan takut error.
+*   Yang penting kamu belajar memperbaiki workflow-mu.
+
+Dan jika suatu hari deploy-mu bikin website down…  
+ ingat cerita ini:
+
+> Downtime bukan akhir dari segalanya.  
+>  Kadang itu justru awal dari versi terbaik seorang developer.

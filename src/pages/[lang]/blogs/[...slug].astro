@@ -9,7 +9,10 @@ export async function getStaticPaths() {
 
   return languages.flatMap((lang) =>
     posts.map((post) => ({
-      params: { lang, slug: post.id },
+      params: {
+        lang,
+        slug: [post.data.slug], // FIX: [...slug] HARUS ARRAY
+      },
       props: post,
     }))
   );
@@ -18,7 +21,7 @@ export async function getStaticPaths() {
 type Props = CollectionEntry<"blog">;
 
 const { lang } = Astro.params;
-const post = Astro.props;
+const post = Astro.props as Props;
 const { Content } = await render(post);
 
 const __ = createTranslator(lang as "id" | "en");
@@ -122,7 +125,7 @@ const __ = createTranslator(lang as "id" | "en");
 
       <div class="mt-12 flex flex-wrap gap-2">
         {
-          post.data.categories?.map((category) => (
+          post.data.categories?.map((category: string) => (
             <a
               href="{ route('categories.show', category) }"
               class="bg-gray-200/60 dark:bg-gray-700/60 text-gray-800 dark:text-gray-200 text-sm font-medium px-4 py-1.5 rounded-full hover:bg-primary/20 dark:hover:bg-primary/20 transition-colors"

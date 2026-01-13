@@ -8,16 +8,16 @@ const { pathname } = Astro.url;
 const __ = createTranslator(currentLang as "id" | "en");
 
 // Helper untuk link internal agar selalu membawa prefix bahasa
-const localLink = (path: string) => {
+const localeLink = (path: string) => {
   const cleanPath = path.startsWith("/") ? path.slice(1) : path;
   return `/${currentLang}/${cleanPath}`;
 };
 
 // Helper untuk cek active state
 const isActive = (path: string) => {
-  const targetPath = localLink(path);
   if (path === "")
-    return pathname === targetPath || pathname === targetPath + "/";
+    return pathname === `/${currentLang}` || pathname === `/${currentLang}/`;
+  const targetPath = localeLink(path);
   return pathname.startsWith(targetPath);
 };
 ---
@@ -30,7 +30,7 @@ const isActive = (path: string) => {
       {/* Logo */}
       <div class="flex-shrink-0">
         <a
-          href={localLink("")}
+          href={localeLink("/")}
           class="text-2xl font-bold text-indigo-600 dark:text-indigo-400"
         >
           <span class="text-black dark:text-white">Fian's</span> Blog
@@ -40,23 +40,23 @@ const isActive = (path: string) => {
       {/* Desktop Navigation */}
       <nav class="hidden md:flex md:items-center md:space-x-8">
         <a
-          href={localLink("")}
+          href={localeLink("/")}
           class={`transition-colors ${isActive("") ? "text-indigo-600 dark:text-indigo-400 font-semibold" : "text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"}`}
         >
           {__("Home")}
         </a>
-         <a
-           href={localLink("blog")}
-           class={`transition-colors ${isActive("blog") ? "text-indigo-600 dark:text-indigo-400 font-semibold" : "text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"}`}
-         >
-           {__("Blog")}
-         </a>
-         <a
-           href={localLink("about")}
-           class={`transition-colors ${isActive("about") ? "text-indigo-600 dark:text-indigo-400 font-semibold" : "text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"}`}
-         >
-           {__("About")}
-         </a>
+        <a
+          href={localeLink("blog")}
+          class={`transition-colors ${isActive("blog") ? "text-indigo-600 dark:text-indigo-400 font-semibold" : "text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"}`}
+        >
+          {__("Blog")}
+        </a>
+        <a
+          href={localeLink("about")}
+          class={`transition-colors ${isActive("about") ? "text-indigo-600 dark:text-indigo-400 font-semibold" : "text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"}`}
+        >
+          {__("About")}
+        </a>
 
         {/* Theme Toggle */}
         <div class="relative">
@@ -209,23 +209,23 @@ const isActive = (path: string) => {
   >
     <div class="px-4 py-5 space-y-1 h-[calc(100vh-4rem)]">
       <a
-        href={localLink("")}
+        href={localeLink("")}
         class={`block px-4 py-3 rounded-lg text-base font-medium ${isActive("") ? "text-white bg-indigo-600" : "text-gray-700 dark:text-gray-200 hover:text-white hover:bg-indigo-600"} transition-colors`}
       >
         {__("Home")}
       </a>
-       <a
-         href={localLink("blog")}
-         class={`block px-4 py-3 rounded-lg text-base font-medium ${isActive("blog") ? "text-white bg-indigo-600" : "text-gray-700 dark:text-gray-200 hover:text-white hover:bg-indigo-600"} transition-colors`}
-       >
-         {__("Blog")}
-       </a>
-       <a
-         href={localLink("about")}
-         class={`block px-4 py-3 rounded-lg text-base font-medium ${isActive("about") ? "text-white bg-indigo-600" : "text-gray-700 dark:text-gray-200 hover:text-white hover:bg-indigo-600"} transition-colors`}
-       >
-         {__("About")}
-       </a>
+      <a
+        href={localeLink("blog")}
+        class={`block px-4 py-3 rounded-lg text-base font-medium ${isActive("blog") ? "text-white bg-indigo-600" : "text-gray-700 dark:text-gray-200 hover:text-white hover:bg-indigo-600"} transition-colors`}
+      >
+        {__("Blog")}
+      </a>
+      <a
+        href={localeLink("about")}
+        class={`block px-4 py-3 rounded-lg text-base font-medium ${isActive("about") ? "text-white bg-indigo-600" : "text-gray-700 dark:text-gray-200 hover:text-white hover:bg-indigo-600"} transition-colors`}
+      >
+        {__("About")}
+      </a>
     </div>
   </div>
 </header>
