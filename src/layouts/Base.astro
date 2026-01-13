@@ -4,19 +4,8 @@ import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import { SITE_TITLE, SITE_DESCRIPTION } from "../consts"; // Buat file constants jika belum ada
 
-type Props = CollectionEntry<"blog">["data"];
-
-const {
-  title,
-  description,
-  pubDate,
-  updatedDate,
-  heroImage,
-  author = "fiandev",
-} = Astro.props;
-
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
-const socialImageURL = new URL(heroImage?.src || "/icon.png", Astro.site);
+const socialImageURL = new URL("/icon.png", Astro.site);
 const siteName = SITE_TITLE;
 
 // Schema.org JSON-LD
@@ -27,12 +16,12 @@ const schemaData = {
     "@type": "WebPage",
     "@id": Astro.url,
   },
-  headline: title,
-  description: description || SITE_DESCRIPTION,
+  headline: SITE_TITLE,
+  description: SITE_DESCRIPTION,
   image: socialImageURL,
   author: {
     "@type": "Person",
-    name: author,
+    name: "fiandev",
   },
   publisher: {
     "@type": "Organization",
@@ -42,8 +31,6 @@ const schemaData = {
       url: new URL("/images/logo.png", Astro.site),
     },
   },
-  datePublished: pubDate.toISOString(),
-  dateModified: updatedDate ? updatedDate.toISOString() : pubDate.toISOString(),
 };
 ---
 
@@ -61,16 +48,16 @@ const schemaData = {
     <link rel="canonical" href={canonicalURL} />
 
     <!-- Primary Meta Tags -->
-    <title>{title ? `${title} - ${siteName}` : siteName}</title>
-    <meta name="title" content={title ? `${title} - ${siteName}` : siteName} />
-    <meta name="description" content={description || SITE_DESCRIPTION} />
+    <title>{SITE_TITLE}</title>
+    <meta name="title" content={SITE_TITLE} />
+    <meta name="description" content={SITE_DESCRIPTION} />
     <meta name="theme-color" content="#FFFFFF" />
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="article" />
     <meta property="og:url" content={Astro.url} />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description || SITE_DESCRIPTION} />
+    <meta property="og:title" content={SITE_TITLE} />
+    <meta property="og:description" content={SITE_DESCRIPTION} />
     <meta property="og:image" content={socialImageURL} />
     <meta property="og:site_name" content={siteName} />
     <meta property="og:locale" content="id_ID" />
@@ -78,11 +65,8 @@ const schemaData = {
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
     <meta property="twitter:url" content={Astro.url} />
-    <meta property="twitter:title" content={title} />
-    <meta
-      property="twitter:description"
-      content={description || SITE_DESCRIPTION}
-    />
+    <meta property="twitter:title" content={SITE_TITLE} />
+    <meta property="twitter:description" content={SITE_DESCRIPTION} />
     <meta property="twitter:image" content={socialImageURL} />
 
     <!-- JSON-LD -->
