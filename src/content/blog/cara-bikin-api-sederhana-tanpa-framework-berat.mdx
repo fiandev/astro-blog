@@ -158,13 +158,14 @@ Walaupun Node.js terkenal dengan Express, Node.js sebenarnya sudah punya modul *
 
 Mari bikin dua endpoint:
 
-*   **GET /hello** → balas **{ message: "Hello World" }**
+*   **GET /hello** → balas **`{ message: "Hello World" }`**
 *   **POST /api/echo** → reply dengan JSON yang dikirim user
 
 ### **Kode lengkap Node.js (native)**
 
 Buat file: **server.js**
 
+```js
 const http = require("http");
 
 const server = http.createServer((req, res) => {
@@ -208,15 +209,19 @@ const server = http.createServer((req, res) => {
 server.listen(3000, () => {
   console.log("Server running on http://localhost:3000");
 });
+```
   
 
 ### Menjalankan server
 
+```sh
 node server.js
+```
   
 
 ### Coba dengan curl
 
+```sh
 curl http://localhost:3000/hello
   
 
@@ -226,15 +231,17 @@ curl -X POST http://localhost:3000/api/echo \\
   -H "Content-Type: application/json" \\
   -d '{"name":"Fian"}'
   
+```
 
 Simple dan jelas. Semua mekanisme HTTP dilakukan secara manual.
 
 # **Contoh 2 API sederhana dengan Deno**
 
-Deno sangat clean. API server-nya cuma satu fungsi:
+```js
+// Deno sangat clean. API server-nya cuma satu fungsi:
 
 Deno.serve()
-  
+```
 
 Deno sudah mendukung Web Standard API, jadi bikin API terasa seperti bikin server di Cloudflare Workers atau Bun.
 
@@ -242,6 +249,7 @@ Deno sudah mendukung Web Standard API, jadi bikin API terasa seperti bikin serve
 
 Buat file: **server.ts**
 
+```js
 Deno.serve(async (req) => {
   const url = new URL(req.url);
 
@@ -265,12 +273,14 @@ Deno.serve(async (req) => {
     headers: { "Content-Type": "application/json" }
   });
 });
+```
   
 
 ### Jalanin server
 
+```sh
 deno run --allow-net server.ts
-  
+```
 
 Deno butuh permission eksplisit, salah satu fitur keamanan uniknya.
 
@@ -287,13 +297,15 @@ Bun dirancang untuk performa tinggi dan DX yang cepat.
 
 API server-nya mirip Deno:
 
+```js
 Bun.serve()
-  
+```
 
 ### **Kode lengkap Bun**
 
 File: **server.js**
 
+```js
 Bun.serve({
   port: 3000,
   fetch(req) {
@@ -314,17 +326,19 @@ Bun.serve({
     return new Response("Not Found", { status: 404 });
   }
 });
-  
+```  
 
 ### Jalanin server
 
+```sh
 bun run server.js
-  
+```
 
 ### Test curl
 
+```sh
 curl http://localhost:3000/hello
-  
+```
 
 Bun paling cepat startup-nya, dan syntax-nya sangat clean.
 
@@ -334,6 +348,7 @@ Kalau kamu mau API-nya lebih “developer-like”, kamu bisa tambah fitur kecil 
 
 ### **Router mini**
 
+```js
 const routes = {
   "GET /hello": () => Response.json({ ok: true })
 };
@@ -344,20 +359,23 @@ const routes = {
 
 ### **Logger sederhana**
 
+```js
 console.log(req.method, req.url);
+```
   
 
 ### **Middleware wrapper**
 
 Bisa bikin fungsi:
 
+```js
 function withLogging(handler) {
   return async (req) => {
     console.log(req.method, req.url);
     return handler(req);
   };
 }
-  
+```  
 
 ### **Rate limiting dasar**
 

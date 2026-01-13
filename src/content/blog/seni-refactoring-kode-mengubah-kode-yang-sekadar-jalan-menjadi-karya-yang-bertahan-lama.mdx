@@ -59,11 +59,15 @@ Teknik refactoring yang paling sederhana namun paling berdampak adalah mengganti
 
 Bayangkan Anda melihat kode seperti ini:
 
+```js
 if (d.s == 1) { ... }
+```
 
 Kode ini memaksa pembaca berhenti dan berpikir. Apa itu d? Apa itu s? Mengapa 1? Bandingkan dengan versi yang sudah direfactor:
 
+```js
 if (document.status == STATUS\_ACTIVE) { ... }
+```
 
 Tanpa perlu membaca dokumentasi, Anda langsung tahu apa yang terjadi. Hindari nama variabel generik seperti data, item, atau list. Gunakan nama yang spesifik seperti userData, cartItems, atau pendingTransactions. Semakin spesifik nama variabel, semakin kecil ruang untuk kesalahpahaman.
 

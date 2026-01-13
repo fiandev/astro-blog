@@ -46,11 +46,13 @@ Beberapa alasan mengapa Gin cepat dipahami oleh pemula:
 
 Ada banyak framework backend, tapi jarang yang bisa sesingkat Gin:
 
+```js
 r.GET("/ping", func(c \*gin.Context) {
   c.JSON(200, gin.H{
     "message": "pong",
   })
 })
+```
   
 
 Selesai. Simple banget.
