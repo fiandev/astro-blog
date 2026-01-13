@@ -1,7 +1,25 @@
 ---
+import { createTranslator } from "../locales";
+
+const { lang } = Astro.params;
+const currentLang = lang || "en";
 const { pathname } = Astro.url;
-const isActive = (path: string) =>
-  pathname === path || (path !== "/" && pathname.startsWith(path));
+
+const __ = createTranslator(currentLang as "id" | "en");
+
+// Helper untuk link internal agar selalu membawa prefix bahasa
+const localLink = (path: string) => {
+  const cleanPath = path.startsWith("/") ? path.slice(1) : path;
+  return `/${currentLang}/${cleanPath}`;
+};
+
+// Helper untuk cek active state
+const isActive = (path: string) => {
+  const targetPath = localLink(path);
+  if (path === "")
+    return pathname === targetPath || pathname === targetPath + "/";
+  return pathname.startsWith(targetPath);
+};
 ---
 
 <header
@@ -12,7 +30,7 @@ const isActive = (path: string) =>
       {/* Logo */}
       <div class="flex-shrink-0">
         <a
-          href="/"
+          href={localLink("")}
           class="text-2xl font-bold text-indigo-600 dark:text-indigo-400"
         >
           <span class="text-black dark:text-white">Fian's</span> Blog
@@ -22,16 +40,16 @@ const isActive = (path: string) =>
       {/* Desktop Navigation */}
       <nav class="hidden md:flex md:items-center md:space-x-8">
         <a
-          href="/"
-          class={`transition-colors ${pathname === "/" ? "text-indigo-600 dark:text-indigo-400" : "text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"}`}
+          href={localLink("")}
+          class={`transition-colors ${isActive("") ? "text-indigo-600 dark:text-indigo-400 font-semibold" : "text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"}`}
         >
-          Home
+          {__("Home")}
         </a>
         <a
-          href="/blog"
-          class={`transition-colors ${isActive("/blog") ? "text-indigo-600 dark:text-indigo-400" : "text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"}`}
+          href={localLink("blog")}
+          class={`transition-colors ${isActive("blog") ? "text-indigo-600 dark:text-indigo-400 font-semibold" : "text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"}`}
         >
-          Blogs
+          {__("Blog")}
         </a>
 
         {/* Theme Toggle */}
@@ -63,11 +81,15 @@ const isActive = (path: string) =>
         <div class="relative">
           <button
             id="lang-toggle"
-            class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center gap-1"
             aria-label="Change Language"
           >
+            <span
+              class="text-sm font-medium uppercase text-gray-700 dark:text-gray-300"
+              >{currentLang}</span
+            >
             <svg
-              class="w-5 h-5 text-gray-700 dark:text-gray-300"
+              class="w-4 h-4 text-gray-700 dark:text-gray-300"
               xmlns="http://www.w3.org/2000/svg"
               width="24"
               height="24"
@@ -78,27 +100,24 @@ const isActive = (path: string) =>
               stroke-linecap="round"
               stroke-linejoin="round"
             >
-              <path
-                d="M5 8c-1.6 1-3 2.5-3 5 0 2 1 3 3 3 1 0 2.5-1 4-3 1 1 2 2 4 2 2 0 3-1 3-3 0-2-1-3-3-3-1 0-2 1-4 3-1-1-2-2-4-2z"
-              ></path>
-              <path d="M2 13h1"></path>
+              <path d="M6 9l6 6 6-6"></path>
             </svg>
           </button>
           <div
             id="lang-dropdown"
-            class="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 hidden z-50"
+            class="absolute right-0 mt-2 w-32 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 hidden z-50 ring-1 ring-black ring-opacity-5"
           >
             <a
               href="#"
               data-lang="en"
-              class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 lang-option"
+              class={`block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 lang-option ${currentLang === "en" ? "text-indigo-600 font-bold" : "text-gray-700 dark:text-gray-300"}`}
             >
               English
             </a>
             <a
               href="#"
               data-lang="id"
-              class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 lang-option"
+              class={`block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 lang-option ${currentLang === "id" ? "text-indigo-600 font-bold" : "text-gray-700 dark:text-gray-300"}`}
             >
               Indonesia
             </a>
@@ -108,18 +127,13 @@ const isActive = (path: string) =>
 
       {/* Mobile Menu Toggle */}
       <div class="md:hidden flex items-center space-x-2">
-        {/* Theme Toggle for Mobile */}
         <button
           id="theme-toggle-mobile"
           class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-          aria-label="Toggle Theme"
         >
           <svg
             id="theme-icon-mobile"
             class="w-5 h-5 text-gray-700 dark:text-gray-300"
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
@@ -131,56 +145,38 @@ const isActive = (path: string) =>
           </svg>
         </button>
 
-        {/* Language Toggle for Mobile */}
         <div class="relative">
           <button
             id="lang-toggle-mobile"
-            class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-            aria-label="Change Language"
+            class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center"
           >
-            <svg
-              class="w-5 h-5 text-gray-700 dark:text-gray-300"
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
+            <span
+              class="text-sm font-bold uppercase text-gray-700 dark:text-gray-300 mr-1"
+              >{currentLang}</span
             >
-              <path
-                d="M5 8c-1.6 1-3 2.5-3 5 0 2 1 3 3 3 1 0 2.5-1 4-3 1 1 2 2 4 2 2 0 3-1 3-3 0-2-1-3-3-3-1 0-2 1-4 3-1-1-2-2-4-2z"
-              ></path>
-              <path d="M2 13h1"></path>
-            </svg>
           </button>
           <div
             id="lang-dropdown-mobile"
-            class="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 hidden z-50"
+            class="absolute right-0 mt-2 w-32 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 hidden z-50 ring-1 ring-black ring-opacity-5"
           >
             <a
               href="#"
               data-lang="en"
               class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 lang-option-mobile"
+              >English</a
             >
-              English
-            </a>
             <a
               href="#"
               data-lang="id"
               class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 lang-option-mobile"
+              >Indonesia</a
             >
-              Indonesia
-            </a>
           </div>
         </div>
 
         <button
           id="mobile-menu-toggle"
-          class="text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400"
-          aria-label="Menu"
+          class="text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 p-2"
         >
           <svg
             id="menu-icon"
@@ -188,7 +184,6 @@ const isActive = (path: string) =>
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
           >
             <path
               stroke-linecap="round"
@@ -204,229 +199,165 @@ const isActive = (path: string) =>
   {/* Mobile Menu */}
   <div
     id="mobile-menu"
-    class="md:hidden max-h-0 opacity-0 invisible overflow-hidden transition-all duration-300 ease-in-out bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm border-t border-gray-200 dark:border-gray-700 absolute top-16 left-0 right-0 z-50 shadow-lg"
+    class="md:hidden max-h-0 opacity-0 invisible overflow-hidden transition-all duration-300 ease-in-out bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm border-t border-gray-200 dark:border-gray-700 absolute top-16 left-0 right-0 z-50 shadow-xl"
   >
     <div class="px-4 py-5 space-y-1 h-[calc(100vh-4rem)]">
       <a
-        href="/"
-        class={`block px-4 py-3 rounded-lg text-base font-medium ${pathname === "/" ? "text-white bg-indigo-600" : "text-gray-700 dark:text-gray-200 hover:text-white hover:bg-indigo-600"} transition-colors`}
+        href={localLink("")}
+        class={`block px-4 py-3 rounded-lg text-base font-medium ${isActive("") ? "text-white bg-indigo-600" : "text-gray-700 dark:text-gray-200 hover:text-white hover:bg-indigo-600"} transition-colors`}
       >
-        Home
+        {__("Home")}
       </a>
       <a
-        href="/blog"
-        class={`block px-4 py-3 rounded-lg text-base font-medium ${isActive("/blog") ? "text-white bg-indigo-600" : "text-gray-700 dark:text-gray-200 hover:text-white hover:bg-indigo-600"} transition-colors`}
+        href={localLink("blog")}
+        class={`block px-4 py-3 rounded-lg text-base font-medium ${isActive("blog") ? "text-white bg-indigo-600" : "text-gray-700 dark:text-gray-200 hover:text-white hover:bg-indigo-600"} transition-colors`}
       >
-        Blogs
+        {__("Blog")}
       </a>
     </div>
   </div>
 </header>
 
-{/* Cookie Consent Banner */}
-<div
-  id="cookie-consent"
-  class="fixed bottom-0 left-0 right-0 bg-gray-800 dark:bg-gray-900 text-white text-sm z-[9999] hidden py-4"
->
-  <div
-    class="container mx-auto max-w-screen-xl px-4 py-3 flex flex-col sm:flex-row justify-between items-center gap-4"
-  >
-    <p class="sm:w-3/4 text-center sm:text-left">
-      We use cookies to enhance your experience. By continuing to visit this
-      site, you agree to our use of cookies.
-    </p>
-    <button
-      id="accept-cookies"
-      class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-md transition-colors w-full sm:w-auto text-center"
-    >
-      Accept
-    </button>
-  </div>
-</div>
-
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    // Mobile Menu Toggle
+  function initHeader() {
+    // Mobile Menu
     const mobileMenuToggle = document.getElementById("mobile-menu-toggle");
     const mobileMenu = document.getElementById("mobile-menu");
     const menuIcon = document.getElementById("menu-icon");
 
     if (mobileMenuToggle && mobileMenu && menuIcon) {
-      mobileMenuToggle.addEventListener("click", function () {
-        if (mobileMenu.classList.contains("max-h-0")) {
-          // Buka Menu
+      // Clone element to remove old event listeners if using ViewTransitions
+      const newToggle = mobileMenuToggle.cloneNode(true);
+      mobileMenuToggle.parentNode?.replaceChild(newToggle, mobileMenuToggle);
+
+      newToggle.addEventListener("click", function () {
+        const isClosed = mobileMenu.classList.contains("max-h-0");
+        if (isClosed) {
           mobileMenu.classList.remove("max-h-0", "opacity-0", "invisible");
           mobileMenu.classList.add("max-h-screen", "opacity-100", "visible");
-          // Icon Close (X)
           menuIcon.innerHTML =
             '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>';
         } else {
-          // Tutup Menu
           mobileMenu.classList.add("max-h-0", "opacity-0", "invisible");
           mobileMenu.classList.remove("max-h-screen", "opacity-100", "visible");
-          // Icon Burger
           menuIcon.innerHTML =
             '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>';
         }
       });
     }
 
-    // Theme Toggle
-    const themeToggle = document.getElementById("theme-toggle");
-    const themeToggleMobile = document.getElementById("theme-toggle-mobile");
-    const themeIcon = document.getElementById("theme-icon");
-    const themeIconMobile = document.getElementById("theme-icon-mobile");
+    // Theme Logic
+    const themeToggles = [
+      document.getElementById("theme-toggle"),
+      document.getElementById("theme-toggle-mobile"),
+    ];
+    const themeIcons = [
+      document.getElementById("theme-icon"),
+      document.getElementById("theme-icon-mobile"),
+    ];
 
-    function updateThemeIcon(theme: string) {
-      const darkIcon =
+    function updateIcons(theme: string) {
+      const darkPath =
         '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M22 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>';
-      const lightIcon = '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>';
+      const lightPath = '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>';
 
+      themeIcons.forEach((icon) => {
+        if (icon) icon.innerHTML = theme === "dark" ? darkPath : lightPath;
+      });
+    }
+
+    function setTheme(theme: string) {
+      document.documentElement.setAttribute("data-theme", theme);
+      localStorage.setItem("theme", theme);
+      document.cookie = `theme=${theme}; path=/; max-age=31536000`; // Backup for SSR
       if (theme === "dark") {
-        if (themeIcon) themeIcon.innerHTML = darkIcon;
-        if (themeIconMobile) themeIconMobile.innerHTML = darkIcon;
+        document.documentElement.classList.add("dark");
       } else {
-        if (themeIcon) themeIcon.innerHTML = lightIcon;
-        if (themeIconMobile) themeIconMobile.innerHTML = lightIcon;
+        document.documentElement.classList.remove("dark");
       }
+      updateIcons(theme);
     }
 
-    function getThemeFromCookie() {
-      const cookies = document.cookie.split(";");
-      for (let i = 0; i < cookies.length; i++) {
-        const cookie = cookies[i].trim();
-        if (cookie.startsWith("theme=")) {
-          return cookie.substring(6);
-        }
-      }
-      return null;
-    }
+    // Init Theme
+    const storedTheme =
+      localStorage.getItem("theme") ||
+      (document.documentElement.classList.contains("dark") ? "dark" : "light");
+    setTheme(storedTheme);
 
-    function initializeTheme() {
-      let themeFromCookie = getThemeFromCookie();
-      let themeFromLocalStorage = localStorage.getItem("theme");
-      let currentTheme = themeFromCookie || themeFromLocalStorage;
-
-      if (!currentTheme) {
-        currentTheme =
-          document.documentElement.getAttribute("data-theme") === "dark"
-            ? "dark"
-            : "light";
-      }
-
-      document.documentElement.setAttribute("data-theme", currentTheme);
-      localStorage.setItem("theme", currentTheme);
-      document.cookie = `theme=${currentTheme}; path=/; max-age=31536000`;
-      updateThemeIcon(currentTheme);
-
-      return currentTheme;
-    }
-
-    let currentTheme = initializeTheme();
-
-    function toggleTheme() {
-      currentTheme = currentTheme === "light" ? "dark" : "light";
-      document.documentElement.setAttribute("data-theme", currentTheme);
-      localStorage.setItem("theme", currentTheme);
-      updateThemeIcon(currentTheme);
-      document.cookie = `theme=${currentTheme}; path=/; max-age=31536000`;
-    }
-
-    if (themeToggle) themeToggle.addEventListener("click", toggleTheme);
-    if (themeToggleMobile)
-      themeToggleMobile.addEventListener("click", toggleTheme);
-
-    // Language Toggle
-    const langToggle = document.getElementById("lang-toggle");
-    const langDropdown = document.getElementById("lang-dropdown");
-    const langToggleMobile = document.getElementById("lang-toggle-mobile");
-    const langDropdownMobile = document.getElementById("lang-dropdown-mobile");
-    const langOptions = document.querySelectorAll(".lang-option");
-    const langOptionsMobile = document.querySelectorAll(".lang-option-mobile");
-
-    if (langToggle && langDropdown) {
-      langToggle.addEventListener("click", function (e) {
-        e.stopPropagation();
-        langDropdown.classList.toggle("hidden");
-        if (
-          langDropdownMobile &&
-          !langDropdownMobile.classList.contains("hidden")
-        ) {
-          langDropdownMobile.classList.add("hidden");
-        }
+    themeToggles.forEach((btn) => {
+      btn?.addEventListener("click", () => {
+        const current =
+          localStorage.getItem("theme") === "dark" ? "light" : "dark";
+        setTheme(current);
       });
-    }
+    });
 
-    if (langToggleMobile && langDropdownMobile) {
-      langToggleMobile.addEventListener("click", function (e) {
-        e.stopPropagation();
-        langDropdownMobile.classList.toggle("hidden");
-        if (langDropdown && !langDropdown.classList.contains("hidden")) {
-          langDropdown.classList.add("hidden");
-        }
-      });
-    }
+    // Language Logic
+    const langToggles = [
+      {
+        btn: document.getElementById("lang-toggle"),
+        menu: document.getElementById("lang-dropdown"),
+      },
+      {
+        btn: document.getElementById("lang-toggle-mobile"),
+        menu: document.getElementById("lang-dropdown-mobile"),
+      },
+    ];
 
-    document.addEventListener("click", function (e) {
+    function switchLanguage(targetLang: string) {
+      const currentPath = window.location.pathname;
+      const segments = currentPath.split("/").filter(Boolean); // remove empty strings
+
+      // Asumsi struktur URL selalu /lang/page...
+      // Jika segmen pertama adalah 'en' atau 'id', ganti. Jika tidak (root), tambah.
       if (
-        langToggle &&
-        langDropdown &&
-        !langToggle.contains(e.target as Node) &&
-        !langDropdown.contains(e.target as Node)
+        segments.length > 0 &&
+        (segments[0] === "en" || segments[0] === "id")
       ) {
-        langDropdown.classList.add("hidden");
+        segments[0] = targetLang;
+      } else {
+        segments.unshift(targetLang);
       }
-      if (
-        langToggleMobile &&
-        langDropdownMobile &&
-        !langToggleMobile.contains(e.target as Node) &&
-        !langDropdownMobile.contains(e.target as Node)
-      ) {
-        langDropdownMobile.classList.add("hidden");
+
+      const newPath = "/" + segments.join("/");
+      window.location.href = newPath;
+    }
+
+    langToggles.forEach(({ btn, menu }) => {
+      if (btn && menu) {
+        // Toggle menu
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          menu.classList.toggle("hidden");
+        });
+
+        // Close when clicking outside
+        document.addEventListener("click", (e) => {
+          if (
+            !btn.contains(e.target as Node) &&
+            !menu.contains(e.target as Node)
+          ) {
+            menu.classList.add("hidden");
+          }
+        });
+
+        // Handle Selection
+        const options = menu.querySelectorAll("a[data-lang]");
+        options.forEach((opt) => {
+          opt.addEventListener("click", (e) => {
+            e.preventDefault();
+            const lang = opt.getAttribute("data-lang");
+            if (lang) switchLanguage(lang);
+            menu.classList.add("hidden");
+          });
+        });
       }
     });
+  }
 
-    function handleLanguageChange(lang: "id" | "en") {
-      document.cookie = `language=${lang}; path=/; max-age=31536000`;
-      const currentUrl = new URL(window.location.href);
-      currentUrl.searchParams.set("lang", lang);
-      window.location.href = currentUrl.toString();
-    }
+  // Run on load
+  initHeader();
 
-    langOptions.forEach((option) => {
-      option.addEventListener("click", function (e) {
-        e.preventDefault();
-        const lang = this.getAttribute("data-lang");
-        if (lang) handleLanguageChange(lang);
-        if (langDropdown) langDropdown.classList.add("hidden");
-      });
-    });
-
-    langOptionsMobile.forEach((option) => {
-      option.addEventListener("click", function (e) {
-        e.preventDefault();
-        const lang = this.getAttribute("data-lang");
-        if (lang) handleLanguageChange(lang);
-        if (langDropdownMobile) langDropdownMobile.classList.add("hidden");
-      });
-    });
-
-    // Cookie Consent
-    const cookieConsent = document.getElementById("cookie-consent");
-    const acceptCookies = document.getElementById("accept-cookies");
-    const cookiesAccepted = document.cookie
-      .split(";")
-      .some((item) => item.trim().startsWith("cookies_accepted="));
-
-    if (!cookiesAccepted && cookieConsent) {
-      cookieConsent.classList.remove("hidden");
-    }
-
-    if (acceptCookies && cookieConsent) {
-      acceptCookies.addEventListener("click", function () {
-        document.cookie = "cookies_accepted=true; path=/; max-age=31536000";
-        cookieConsent.classList.add("hidden");
-      });
-    }
-  });
+  // Re-run on View Transitions (Astro 3+)
+  document.addEventListener("astro:page-load", initHeader);
 </script>

@@ -1,8 +1,8 @@
 ---
 import { getCollection } from "astro:content";
-import Layout from "../../layouts/Base.astro";
-import { createTranslator } from "../../locales";
-import { createSlug } from "../../utils/slug";
+import Layout from "../../../layouts/Base.astro";
+import { createTranslator } from "../../../locales";
+import { createSlug } from "../../../utils/slug";
 
 export async function getStaticPaths() {
   const posts = await getCollection("blog");
@@ -10,7 +10,7 @@ export async function getStaticPaths() {
   const uniqueCategories = [...new Set(allCategories)];
 
   return uniqueCategories.map((category) => {
-    const categorySlug = createSlug(category);
+    const categorySlug = createSlug(category as string);
 
     const filteredPosts = posts.filter((post) => {
       const postCats = post.data.categories || [];
