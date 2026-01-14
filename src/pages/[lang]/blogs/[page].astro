@@ -3,6 +3,7 @@ import { getCollection } from "astro:content";
 import Layout from "../../../layouts/Base.astro";
 import { createTranslator } from "../../../locales";
 import Pagination from "../../../components/Pagination.astro";
+import { fetchGithubUser } from "../../../utils/github-api";
 
 export async function getStaticPaths() {
   const langs = ["id", "en"];
@@ -89,6 +90,14 @@ const formatDate = (date: Date) => {
   });
 };
 
+const me = await fetchGithubUser("fiandev");
+// Mock variable untuk author (karena di Blade $author dari controller)
+const author = {
+  name: me?.name,
+  gravatar: me?.avatar_url,
+  bio: me?.bio,
+};
+
 const pageNumbers = generatePageNumbers(page.currentPage, page.lastPage);
 ---
 
@@ -161,6 +170,7 @@ const pageNumbers = generatePageNumbers(page.currentPage, page.lastPage);
             <div class="flex flex-col md:flex-row">
               <div class="w-full md:w-1/3">
                 <img
+                  fetchpriority="high"
                   src={post.data.heroImage?.src || "/placeholder.jpg"}
                   alt={post.data.title}
                   width={post.data.heroImage?.width}
@@ -173,7 +183,7 @@ const pageNumbers = generatePageNumbers(page.currentPage, page.lastPage);
               <div class="w-full md:w-2/3 p-6">
                 <div class="flex items-center space-x-2 text-sm mb-3">
                   <img
-                    src="/default-avatar.png"
+                    src={author.gravatar}
                     alt="Author"
                     width="24"
                     height="24"
@@ -181,7 +191,7 @@ const pageNumbers = generatePageNumbers(page.currentPage, page.lastPage);
                     class="w-6 h-6 rounded-full object-cover"
                   />
                   <span class="font-semibold text-gray-800 dark:text-gray-200">
-                    {post.data.author || "Admin"}
+                    {author.name}
                   </span>
                   <span class="text-gray-400 dark:text-gray-500">•</span>
                   <time

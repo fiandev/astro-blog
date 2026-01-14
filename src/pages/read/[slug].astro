@@ -83,6 +83,7 @@ const currentUrl = Astro.url;
       </div>
 
       <img
+        fetchpriority="high"
         src={post.data.heroImage?.src}
         alt={post.data.title}
         width="800"

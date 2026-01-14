@@ -36,7 +36,7 @@ const schemaData = {
 ---
 
 <!doctype html>
-<html class="scroll-smooth">
+<html class="scroll-smooth" lang="id">
   <head>
     <GoogleAnalystics />
     <!-- Global Metadata -->
@@ -78,16 +78,16 @@ const schemaData = {
       set:html={JSON.stringify(schemaData)}
     />
 
-    <!-- Fonts (Inter) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
 
-    <!-- AOS CSS -->
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+
+    <!-- AOS CSS (async load) -->
+    <link
+      rel="preload"
+      as="style"
+      onload="this.onload=null;this.rel='stylesheet'"
+      href="https://unpkg.com/aos@2.3.1/dist/aos.css"
+    />
+    <noscript><link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css"></noscript>
 
     <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-JF4KJFKR00"
@@ -145,7 +145,7 @@ const schemaData = {
     <Footer />
 
     <!-- AOS Script -->
-    <script is:inline src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script defer src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script is:inline>
       document.addEventListener("DOMContentLoaded", function () {
         AOS.init();
