@@ -358,8 +358,18 @@ img {
   }
 }
 
+.trix-content :is(h2, h3, h4, h5) {
+  color: var(--color-indigo-600);
+}
+
+.trix-content h1 { opacity: 1; }
+.trix-content h2 { opacity: 0.8; }
+.trix-content h3 { opacity: 0.7; }
+.trix-content h4 { opacity: 0.6; }
+.trix-content h5 { opacity: 0.5; }
+
 @variant dark {
-  .trix-content h2, .trix-content h3, .trix-content h4, .trix-content h5 {
+  .trix-content :is(h2, h3, h4, h5) {
     color: var(--color-indigo-300);
   }
 
