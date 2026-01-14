@@ -6,7 +6,7 @@ import { defineConfig } from "astro/config";
 
 // https://astro.build/config
 export default defineConfig({
-  site: "https://fiandev.com",
+  site: "https://blog.fiandev.com",
   integrations: [
     mdx(),
     sitemap({
@@ -17,7 +17,7 @@ export default defineConfig({
           id: "id",
         },
       },
-      filter: (page) => page !== "https://fiandev.com/",
+      filter: (page) => page !== "https://blog.fiandev.com/",
     }),
   ],
   vite: {
