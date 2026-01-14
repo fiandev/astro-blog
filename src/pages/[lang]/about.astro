@@ -14,31 +14,31 @@ const me = await fetchGithubUser("fiandev");
 
 <Layout title={__("About")}>
   <!-- Hero Section -->
-  <div class="text-center mb-12">
-    <img
-      src={me?.avatar_url}
-      alt="About Fian"
-      class="w-24 h-24 mx-auto rounded-lg shadow-lg mb-8"
-    />
-    <h2 class="text-4xl font-extrabold text-gray-900 dark:text-white mb-4">
-      {__("Welcome")}
-    </h2>
-    <p
-      class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed"
-    >
-      {__("about_paragraph1")}
-    </p>
-  </div>
+  <div class="h-[80vh] max-h-[80vh] overflow-y-scroll">
+    <div class="text-center mb-12">
+      <img
+        src={me?.avatar_url}
+        alt="About Fian"
+        class="w-24 h-24 mx-auto rounded-lg shadow-lg mb-8"
+      />
+      <h2 class="text-4xl font-extrabold text-gray-900 dark:text-white mb-4">
+        {__("Welcome")}
+      </h2>
+    </div>
 
-  <!-- Content Sections -->
-  <div class="max-w-4xl mx-auto space-y-8">
-    <div class="prose prose-lg dark:prose-invert mx-auto flex flex-col gap-4">
-      <p class="text-lg leading-relaxed text-gray-700 dark:text-gray-200">
-        {__("about_paragraph2")}
-      </p>
-      <p class="text-lg leading-relaxed text-gray-700 dark:text-gray-200">
-        {__("about_paragraph3")}
-      </p>
+    <!-- Content Sections -->
+    <div class="max-w-4xl mx-auto space-y-8">
+      <div class="prose prose-lg dark:prose-invert mx-auto flex flex-col gap-4">
+        <p class="text-lg leading-relaxed text-gray-700 dark:text-gray-200">
+          {__("about_paragraph1")}
+        </p>
+        <p class="text-lg leading-relaxed text-gray-700 dark:text-gray-200">
+          {__("about_paragraph2")}
+        </p>
+        <p class="text-lg leading-relaxed text-gray-700 dark:text-gray-200">
+          {__("about_paragraph3")}
+        </p>
+      </div>
     </div>
   </div>
 </Layout>
