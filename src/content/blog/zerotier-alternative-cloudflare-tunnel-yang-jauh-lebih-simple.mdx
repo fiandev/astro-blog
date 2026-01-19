@@ -1,0 +1,55 @@
+---
+
+title: "alternative cloudflare tunnel yang jauh lebih simple"
+description: "zerotier, alternative cloudflare tunnel yang jauh lebih simple"
+pubDate: "Tue Dec 16 2025"
+heroImage: "../../assets/blog-images/zerotier.jpg"
+slug: "zerotier-alternative-cloudflare-tunnel-yang-jauh-lebih-simple"
+read_time: 9
+categories: ["networking","sharing","cloudflare","dev insight"]
+
+---
+
+## hasil pencarian cloudflare tunnel setelah sekian lama
+
+saya pribadi sudah cukup lama menggunakan Cloudflare tunnel untuk memudahkan akses remote ke beberapa device yang ada di rumah ketika saya sedang berada di luar. secara konsep, solusi ini cukup menarik karena tidak perlu membuka port publik di router dan sudah terintegrasi dengan layer keamanan cloudflare.
+
+namun setelah digunakan dalam jangka waktu lama, mulai terasa bahwa cloudflare tunnel memiliki overhead yang cukup tinggi. setiap layer aplikasi perlu dikonfigurasi secara terpisah, mulai dari routing, hostname, hingga service yang diekspos. untuk kebutuhan sederhana seperti akses ssh, web panel lokal, atau service internal, proses ini terasa terlalu kompleks dan memakan waktu.
+
+## menemukan alternatif yang lebih sederhana
+
+dari kebutuhan tersebut, akhirnya saya menemukan sebuah platform bernama ZeroTier. secara sederhana, zerotier adalah virtual network yang bekerja layaknya LAN, namun berjalan di atas internet. setiap device yang tergabung ke dalam satu network akan saling terhubung langsung menggunakan private IP tanpa perlu konfigurasi routing atau tunnel per aplikasi.
+
+yang membuat zerotier terasa jauh lebih simple adalah pendekatannya yang device-based, bukan application-based. sekali device tergabung ke network, seluruh service di dalam device tersebut bisa diakses sesuai kebutuhan, selama firewall lokal mengizinkan.
+
+![Image](https://docs.zerotier.com/assets/images/corporate-firewall-01-b440f1e98e9b428c4323a256f845aa09.png)
+
+![Image](https://www.zerotier.com/wp-content/uploads/2025/10/Central-UI-Network-Enterprise-IT-251024-DRAFT.png)
+
+![Image](https://harivemula.com/wp-content/uploads/2021/09/ZeroTier-NetworkFlow.png)
+
+## gambaran singkat cara kerja zerotier
+
+zerotier membuat overlay network dengan subnet privat, misalnya 10.147.17.0/24. setiap device yang join akan mendapatkan satu IP dari subnet tersebut. komunikasi antar device dilakukan secara peer-to-peer jika memungkinkan, dan fallback ke relay jika koneksi langsung tidak tersedia.
+
+dari sisi user, pengalaman yang dirasakan hampir sama seperti berada di satu jaringan wifi yang sama, meskipun secara fisik berada di lokasi yang berbeda.
+
+## tutorial setup zerotier dari awal
+
+langkah pertama adalah membuat akun di website resmi zerotier dan login ke dashboard. setelah login, buat satu network baru. secara default, network akan bersifat private sehingga setiap device yang join perlu di-approve secara manual.
+
+selanjutnya install zerotier client di device yang ingin dihubungkan. untuk linux, prosesnya cukup dengan satu command install dari repository resmi. untuk windows dan macos, cukup download installer dan ikuti proses instalasi seperti aplikasi biasa.
+
+setelah client terinstall, join ke network menggunakan network id yang didapat dari dashboard. pada tahap ini device akan muncul sebagai “unauthorized” di dashboard. tinggal authorize device tersebut, dan dalam beberapa detik device akan mendapatkan private IP zerotier.
+
+## contoh penggunaan untuk akses remote
+
+misalnya saya memiliki server rumahan dengan service ssh dan web admin panel di port lokal. setelah server dan laptop saya tergabung ke network zerotier yang sama, saya bisa langsung ssh ke private IP zerotier server tersebut tanpa perlu port forwarding atau reverse proxy.
+
+untuk web service, cukup akses melalui browser menggunakan IP zerotier dan port lokal yang digunakan. tidak perlu konfigurasi hostname, tunnel, ataupun rule tambahan di layer aplikasi.
+
+## kapan zerotier lebih cocok dibanding cloudflare tunnel
+
+zerotier sangat cocok untuk kebutuhan akses private antar device, remote management, homelab, atau environment development internal. setup cepat, minim konfigurasi, dan tidak mengikat ke satu aplikasi tertentu.
+
+sementara cloudflare tunnel masih lebih relevan untuk publik-facing service yang membutuhkan domain, CDN, dan proteksi layer 7. namun untuk kebutuhan harian yang sederhana, zerotier memberikan solusi yang jauh lebih praktis dan efisien.
