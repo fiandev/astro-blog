@@ -78,8 +78,6 @@ const schemaData = {
       set:html={JSON.stringify(schemaData)}
     />
 
-
-
     <!-- AOS CSS (async load) -->
     <link
       rel="preload"
@@ -87,7 +85,12 @@ const schemaData = {
       onload="this.onload=null;this.rel='stylesheet'"
       href="https://unpkg.com/aos@2.3.1/dist/aos.css"
     />
-    <noscript><link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css"></noscript>
+    <noscript
+      ><link
+        rel="stylesheet"
+        href="https://unpkg.com/aos@2.3.1/dist/aos.css"
+      /></noscript
+    >
 
     <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-JF4KJFKR00"
@@ -130,7 +133,7 @@ const schemaData = {
   </head>
 
   <body
-    class="bg-gray-100 w-full dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-sans relative flex flex-col min-h-screen"
+    class="bg-gray-100 relative w-full dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-sans relative flex flex-col min-h-screen"
   >
     <Header />
 
@@ -146,9 +149,19 @@ const schemaData = {
 
     <!-- AOS Script -->
     <script defer src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/@fiandev/ads@1.0.2/dist/ads.umd.js"
+    ></script>
     <script is:inline>
       document.addEventListener("DOMContentLoaded", function () {
+        ads.init({
+          url: "/ads.json",
+          debug: true,
+          requestTimeout: 5000,
+        });
         AOS.init();
+        // Initialize with your ad server endpoint (This is all you need to do!)
       });
     </script>
   </body>

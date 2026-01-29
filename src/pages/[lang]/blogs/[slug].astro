@@ -15,7 +15,7 @@ export async function getStaticPaths() {
         slug: post.data.slug,
       },
       props: post,
-    }))
+    })),
   );
 }
 
@@ -114,9 +114,9 @@ const currentUrl = Astro.url;
           </li>
           <li class="text-gray-400 dark:text-gray-500">/</li>
           <li
-            class="text-gray-900 dark:text-white font-medium truncate max-w-xs md:max-w-md"
+            class="text-gray-900 dark:text-white font-medium overflow-hidden truncate max-w-xs md:max-w-md"
           >
-            {post.data.title.slice(0, 30)}
+            {post.data.title}
           </li>
         </ol>
       </nav>
@@ -125,6 +125,9 @@ const currentUrl = Astro.url;
         class="trix-content selection:bg-indigo-400/80 selection:text-slate-100 max-w-[68ch] md:max-w-fit"
       >
         <Content />
+      </div>
+
+      <div class="ads-vertical w-full h-max bg-gray-300 dark:bg-gray-700 mt-4">
       </div>
 
       <div class="mt-12 flex flex-wrap gap-2">
@@ -162,7 +165,7 @@ const currentUrl = Astro.url;
             {
               me?.bio ??
                 __(
-                  "A passionate writer and developer who loves sharing stories through words."
+                  "A passionate writer and developer who loves sharing stories through words.",
                 )
             }
           </p>

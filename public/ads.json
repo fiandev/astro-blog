@@ -1,0 +1,40 @@
+{
+    "status": true,
+    "data": [
+        {
+            "id": "1",
+            "image": "https://fw-fileupload-id.s3.ap-southeast-1.amazonaws.com/products/fb530956-70aa-4667-9eeb-23192f4a49f5/images/7bea5128-1f45-4543-888c-8cb2e07aaa72.jpg",
+            "redirect": "https://fastwork.id/user/fiandev/web-programming-other-32059655",
+            "alt": "Jasa Programmer Fullstack Freelance Yang Mengutamakan Hasil Yang Terbaikt",
+            "width": 1080,
+            "height": 720,
+            "target": "_blank"
+        },
+        {
+            "id": "2",
+            "image": "https://storage.googleapis.com/fastwork-static/184e0b00-7a0d-436f-a43f-1b7f9d497051.jpg",
+            "redirect": "https://fastwork.id/user/fiandev/technical-support-52471443",
+            "alt": "Jasa integrasi fitur payment gateway pada webstie",
+            "width": 1080,
+            "height": 720,
+            "target": "_blank"
+        },
+        {
+            "id": "2",
+            "image": "https://storage.googleapis.com/fastwork-static/a5a760c8-6aec-4d49-83a6-ebca01dab216.jpg",
+            "redirect": "https://fastwork.id/user/fiandev/technical-support-52471443",
+            "alt": "Jasa integrasi fitur payment gateway pada webstie",
+            "width": 1080,
+            "height": 720,
+            "target": "_blank"
+        },
+        {
+            "image": "https://storage.googleapis.com/fastwork-static/a474fa93-f22f-41f9-af97-b9d912747459.jpg",
+            "redirect": "https://fastwork.id/user/fiandev/web-development-16280097",
+            "alt": "Pembuatan website custom",
+            "width": 1080,
+            "height": 720,
+            "target": "_blank"
+        }
+    ]
+}

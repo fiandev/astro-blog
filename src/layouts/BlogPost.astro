@@ -97,8 +97,6 @@ const schemaData = {
       set:html={JSON.stringify(schemaData)}
     />
 
-
-
     <!-- AOS CSS (async load) -->
     <link
       rel="preload"
@@ -106,7 +104,12 @@ const schemaData = {
       onload="this.onload=null;this.rel='stylesheet'"
       href="https://unpkg.com/aos@2.3.1/dist/aos.css"
     />
-    <noscript><link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css"></noscript>
+    <noscript
+      ><link
+        rel="stylesheet"
+        href="https://unpkg.com/aos@2.3.1/dist/aos.css"
+      /></noscript
+    >
 
     <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-JF4KJFKR00"
@@ -168,8 +171,17 @@ const schemaData = {
 
     <!-- AOS Script -->
     <script is:inline src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/@fiandev/ads@1.0.2/dist/ads.umd.js"
+    ></script>
     <script is:inline>
       document.addEventListener("DOMContentLoaded", function () {
+        ads.init({
+          url: "/ads.json",
+          debug: true,
+          requestTimeout: 5000,
+        });
         AOS.init();
       });
     </script>
