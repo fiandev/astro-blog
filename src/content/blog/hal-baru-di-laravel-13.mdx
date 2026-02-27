@@ -1,0 +1,106 @@
+---
+
+title: "hal baru apa saja yang ada di laravel 13"
+description: "simak, hal - hal yang akan tersedia di laravel 13"
+pubDate: "Fri Feb 27 2026"
+heroImage: "../../assets/blog-images/hal-baru-di-laravel-13.png"
+slug: "hal-baru-di-laravel-13"
+read_time: 5
+categories: ["fullstack","news","laravel","dev insight"]
+
+---
+
+Laravel 13 adalah rilis besar berikutnya dari framework Laravel yang dijadwalkan hadir pada Maret 2026. Versi ini akan mensyaratkan PHP 8.3 sebagai versi minimum dan mengikuti siklus dukungan Laravel seperti biasa: perbaikan bug hingga Q3 2027 dan pembaruan keamanan hingga Q1 2028.
+
+Fitur–fitur baru Laravel 13 akan terus ditambahkan seiring pengumuman resmi dirilis.
+
+PHP Attributes sekarang menjadi alternatif baru untuk mengonfigurasi berbagai komponen Laravel. Perubahan ini tidak bersifat breaking, jadi cara konfigurasi berbasis properti yang lama tetap bekerja seperti biasa.
+
+Untuk Eloquent Model, sejumlah atribut baru menggantikan kebutuhan mendefinisikan properti seperti `$table`, `$hidden`, `$fillable`, dan lainnya.
+
+Contohnya:
+
+```php
+#[Table('users', key: 'user_id', keyType: 'string', incrementing: false)]
+#[Hidden(['password'])]
+#[Fillable(['name', 'email'])]
+class User extends Model {}
+```
+
+Atribut yang tersedia untuk model mencakup:
+```php
+`#[Appends]`
+`#[Connection]`
+`#[Fillable]`
+`#[Guarded]`
+`#[Hidden]`
+`#[Table]`
+`#[Touches]`
+`#[Unguarded]`
+`#[Visible]`
+```
+
+Untuk Queue Job, konfigurasi kini bisa langsung ditulis di dalam kelas job:
+
+```php
+#[Connection('redis')]
+#[Queue('podcasts')]
+#[Tries(3)]
+#[Timeout(120)]
+class ProcessPodcast implements ShouldQueue {}
+```
+
+Atribut queue yang tersedia:
+```php
+`#[Backoff]`
+`#[Connection]`
+`#[FailOnTimeout]`
+`#[MaxExceptions]`
+`#[Queue]`
+`#[Timeout]`
+`#[Tries]`
+`#[UniqueFor]`
+```
+
+Semua atribut ini juga berlaku untuk listener, notification, mailable, dan broadcast event.
+
+Pada Console Command, signature dan description sekarang bisa didefinisikan dengan atribut:
+
+```php
+#[Signature('mail:send {user} {--queue}')]
+#[Description('Send a marketing email to a user')]
+class SendMailCommand extends Command {}
+```
+
+Atribut juga tersedia untuk Form Request (`#[RedirectTo]`, `#[StopOnFirstFailure]`), API Resource (`#[Collects]`, `#[PreserveKeys]`), Factory (`#[UseModel]`), dan Test Seeder (`#[Seed]`, `#[Seeder]`).
+
+Fitur `Cache::touch()` ditambahkan untuk mempermudah memperpanjang TTL sebuah item cache tanpa perlu get–put ulang:
+
+```php
+// Perpanjang dalam detik
+Cache::touch('user_session:123', 3600);
+
+// Perpanjang dengan DateTime
+Cache::touch('analytics_data', now()->addHours(6));
+
+// Perpanjang tanpa batas waktu
+Cache::touch('report_cache', null);
+```
+
+Sebelumnya, memperpanjang TTL berarti mengambil seluruh data terlebih dahulu, yang tidak efisien. Sekarang, Laravel langsung menggunakan perintah masing-masing driver (EXPIRE untuk Redis, TOUCH untuk Memcached, dll). Method ini mengembalikan true jika berhasil dan false jika key tidak ditemukan. Implementasinya tersedia di semua driver cache.
+
+> Laravel 13 akan membutuhkan minimal PHP 8.3, meningkat dari Laravel 12 yang mensyaratkan PHP 8.2.
+
+Siklus dukungannya mengikuti pola biasa: bugfix hingga Q3 2027 dan security updates hingga Q1 2028.
+
+Versi Laravel sebelumnya:
+10: PHP 8.1–8.3
+11: PHP 8.2–8.4
+12: PHP 8.2–8.5
+13: PHP 8.3–8.5 (rilis Q1 2026)
+
+> Laravel 12 yang dirilis pada 24 Februari 2025 akan tetap mendapat:
+> Bugfix sampai **13 Agustus 2026**
+> Security fixes sampai **24 Februari 2027**
+
+Untuk proses upgrade yang lebih mudah, Laravel Shift bisa membantu dengan membuat PR otomatis berisi perubahan terstruktur dan rapi untuk Anda review.
