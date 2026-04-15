@@ -87,7 +87,7 @@ const formatDate = (date: Date) => {
               <div class="flex items-center gap-2 overflow-scroll text-xs whitespace-nowrap mb-4">
                 {latestPost.data.categories?.map((category: any) => (
                   <a
-                    href={`/categories/${createSlug(category)}`}
+                    href={`/${lang}/categories/${createSlug(category)}`}
                     class="h-6 flex items-center justify-center text-teal-800 dark:text-teal-200 capitalize hover:text-teal-800/60 dark:hover:text-teal-200/60 transition-colors bg-teal-200/40 dark:bg-teal-800/40 rounded-full py-2 px-4"
                   >
                     {category}
@@ -107,7 +107,7 @@ const formatDate = (date: Date) => {
 
             <div
               class="order-1 md:order-2 w-full h-64 bg-gray-400 dark:bg-gray-600 lg:h-full bg-cover bg-center"
-              style={`background-image: url('${latestPost.data.heroImage?.src || "/placeholder.jpg"}');`}
+              style={`background-image: url('${latestPost.data.heroImage?.src || latestPost.data.heroImage || "/placeholder.jpg"}');`}
             />
           </div>
         </section>
@@ -137,7 +137,7 @@ const formatDate = (date: Date) => {
                     <img
                       fetchpriority="high"
                       class="w-full h-48 object-cover"
-                      src={post.data.heroImage?.src || "/placeholder.jpg"}
+                      src={post.data.heroImage?.src || post.data.heroImage || "/placeholder.jpg"}
                       alt={post.data.title}
                       width="400"
                       height="300"

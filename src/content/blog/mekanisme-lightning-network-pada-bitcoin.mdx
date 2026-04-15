@@ -1,20 +1,13 @@
 ---
 title: "Membongkar Mekanisme Lightning Network Bukan Sekadar Magic"
 description: "Cerita pengalaman gw mengulik cara kerja teknis Lightning Network, mulai dari Bitcoin Script sampai ngebongkar mitos soal saldo yang sering bikin salah paham."
-pubDate: "Wed Apr 15 2026"
+pubDate: "Wed Apr 14 2026"
 heroImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/Cryptocurrency_logos.jpg/1280px-Cryptocurrency_logos.jpg"
 slug: "mekanisme-teknis-lightning-network"
 read_time: 12
 categories: ["blockchain", "bitcoin", "layer-2", "dev insight"]
 ---
 
-## title "Membongkar Mekanisme Lightning Network Bukan Sekadar Magic"
-description "Cerita pengalaman gw mengulik cara kerja teknis Lightning Network, mulai dari Bitcoin Script sampai ngebongkar mitos soal saldo yang sering bikin salah paham."
-pubDate "Wed Apr 15 2026"
-heroImage "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/Cryptocurrency_logos.jpg/1280px-Cryptocurrency_logos.jpg"
-slug "mekanisme-teknis-lightning-network"
-read_time 12
-categories ["blockchain", "bitcoin", "layer-2", "dev insight"]
 Jujur aja, gw sempet penasaran banget dan akhirnya mutusin buat bedah daleman cara kerja Lightning Network (LN). Di luar sana, narasinya selalu bilang "LN bikin Bitcoin murah dan instan," tapi jarang banget ada yang berani jelasin teknisnya secara gamblang tanpa analogi yang malah bikin pusing.
 Sebagai *developer*, gw butuh tahu level kodenya. Kalau Bitcoin katanya nggak punya *smart contract* sefleksibel Ethereum, terus gimana caranya LN bisa jalan tanpa ada yang bawa kabur duit di tengah jalan?
 Setelah gw ulik sampai ke level *OpCodes*, gw nemuin *aha moment* yang bikin gw sadar kalau sistem ini tuh beneran arsitektur logika yang sangat presisi. Bukan sekadar *magic*. Ini beberapa poin teknis yang akhirnya gw pahami.

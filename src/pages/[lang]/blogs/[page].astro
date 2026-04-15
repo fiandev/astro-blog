@@ -171,7 +171,7 @@ const pageNumbers = generatePageNumbers(page.currentPage, page.lastPage);
               <div class="w-full md:w-1/3">
                 <img
                   fetchpriority="high"
-                  src={post.data.heroImage?.src || "/placeholder.jpg"}
+                  src={post.data.heroImage?.src || post.data.heroImage || "/placeholder.jpg"}
                   alt={post.data.title}
                   width={post.data.heroImage?.width}
                   height={post.data.heroImage?.height}

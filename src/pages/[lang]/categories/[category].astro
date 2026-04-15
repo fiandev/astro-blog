@@ -103,6 +103,7 @@ const formatDate = (date: Date) => {
                                     class="w-full h-48 object-cover"
                                     src={
                                         post.data.heroImage?.src ||
+                                        post.data.heroImage ||
                                         "/placeholder.jpg"
                                     }
                                     alt={post.data.title}
