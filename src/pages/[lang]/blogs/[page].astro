@@ -162,6 +162,7 @@ const pageNumbers = generatePageNumbers(page.currentPage, page.lastPage);
       page.data.map((post) => (
         <a
           href={`/${lang}/blogs/${post.data.slug}`}
+          class="line-clamp-3 overflow-hidden"
           class="block group post-item transition-all duration-300 ease-in-out"
           data-title={post.data.title.toLowerCase()}
           data-categories={post.data.categories?.join(",") || ""}
