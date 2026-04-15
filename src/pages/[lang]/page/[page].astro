@@ -117,7 +117,7 @@ const formatDate = (date: Date) =>
 
             <div
               class="order-1 md:order-2 w-full h-64 bg-gray-400 dark:bg-gray-600 lg:h-full bg-cover bg-center"
-              style={`background-image: url('${latestPost.data.heroImage?.src || post.data.heroImage || "/placeholder.jpg"}');`}
+              style={`background-image: url('${latestPost.data.heroImage?.src || latestPost.data.heroImage || "/placeholder.jpg"}');`}
             />
           </div>
         </section>
@@ -147,7 +147,11 @@ const formatDate = (date: Date) =>
                     <img
                       fetchpriority="high"
                       class="w-full h-48 object-cover"
-                      src={post.data.heroImage?.src || post.data.heroImage || "/placeholder.jpg"}
+                      src={
+                        (post.data.heroImage?.src ||
+                          post.data.heroImage ||
+                          "/placeholder.jpg") as string
+                      }
                       alt={post.data.title}
                       width="400"
                       height="300"

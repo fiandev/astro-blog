@@ -1,3 +1,5 @@
+import NodeCache from "node-cache";
+
 interface GitHubUser {
   login: string;
   id: number;
@@ -9,26 +11,19 @@ interface GitHubUser {
   bio: string;
 }
 
-interface CacheEntry {
-  data: GitHubUser;
-  expiry: number;
+const userCache = global?.userCache || new NodeCache({ stdTTL: 600 });
+
+if (!global.userCache) {
+  global.userCache = userCache;
 }
 
-const userCache = new Map<string, CacheEntry>();
-const CACHE_DURATION = 10 * 60 * 1000;
 
 export async function fetchGithubUser(
   username: string
 ): Promise<GitHubUser | null> {
-  const now = Date.now();
-
   if (userCache.has(username)) {
-    const cached = userCache.get(username)!;
-    if (cached.expiry > now) {
-      console.log(`[CACHE HIT] Mengambil data ${username} dari cache.`);
-      return cached.data;
-    }
-    userCache.delete(username);
+    console.log(`[CACHE HIT] Mengambil data ${username} dari cache.`);
+    return userCache.get<GitHubUser>(username)!;
   }
 
   try {
@@ -43,10 +38,7 @@ export async function fetchGithubUser(
 
     const data: GitHubUser = await response.json();
 
-    userCache.set(username, {
-      data,
-      expiry: now + CACHE_DURATION,
-    });
+    userCache.set(username, data);
 
     return data;
   } catch (error) {

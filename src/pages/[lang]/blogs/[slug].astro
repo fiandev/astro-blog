@@ -87,7 +87,9 @@ const currentUrl = Astro.url;
       </div>
 
       <img
-        src={post.data.heroImage?.src || post.data.heroImage}
+        src={(post.data.heroImage?.src ||
+          post.data.heroImage ||
+          "/placeholder.jpg") as string}
         alt={post.data.title}
         width="800"
         height="450"
