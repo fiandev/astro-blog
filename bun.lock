@@ -15,7 +15,7 @@
         "mysql2": "^3.16.0",
         "node-cache": "^5.1.2",
         "node-sql-parser": "^5.4.0",
-        "sharp": "^0.34.3",
+        "sharp": "^0.34.5",
         "turndown": "^7.2.2",
       },
       "devDependencies": {
