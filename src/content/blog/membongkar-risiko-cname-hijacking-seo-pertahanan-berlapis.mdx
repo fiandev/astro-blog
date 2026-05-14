@@ -10,14 +10,18 @@ categories: ["Web Development", "SEO", "Cybersecurity"]
 
 Saya melihat tren bagi-bagi subdomain gratis demi mendongkrak Domain Rating secara instan makin marak. Sebagai pengembang yang sehari-hari berkutat dengan Laravel dan Next.js, saya menilai praktik ini bukan sekadar trik pemasaran, melainkan bom waktu dari sisi keamanan dan integritas data.
 
+## Gimana cara kerjanya?
 Secara teknis, taktik ini bekerja lewat delegasi CNAME: subdomain di platform berotoritas tinggi diarahkan ke server pribadi. Tujuannya mentransfer link juice, tapi di balik itu, pemilik domain utama meminjamkan reputasi mereka tanpa kendali atas konten yang muncul. Sering kali dibarengi injeksi tautan sampah masif yang memanipulasi algoritma.
 
-Masalahnya, profil tautan yang masuk bisa sangat toksik. Googlebot dengan SpamBrain-nya kini semakin pintar mendeteksi lonjakan tautan tidak alami. Risiko fatal berikutnya adalah konten duplikat—jika situs bisa diakses lewat dua alamat tanpa deklarasi jelas, otoritas terbagi atau bahkan lenyap. Lebih buruk, penalti akibat pelanggaran di subdomain bisa menghancurkan reputasi domain utama.
+## Masalah Yang terjadi
+profil tautan yang masuk bisa sangat toksik. Googlebot dengan SpamBrain-nya kini semakin pintar mendeteksi lonjakan tautan tidak alami. Risiko fatal berikutnya adalah konten duplikat—jika situs bisa diakses lewat dua alamat tanpa deklarasi jelas, otoritas terbagi atau bahkan lenyap. Lebih buruk, penalti akibat pelanggaran di subdomain bisa menghancurkan reputasi domain utama.
 
 Untungnya, platform modern seperti Cloudflare dan Netlify sudah punya mekanisme pertahanan bawaan. Cloudflare memblokir CNAME lintas akun dengan Error 1014, memastikan tak sembarang orang bisa mengklaim lalu lintas domain kita. Netlify, dengan sistem Anycast-nya, memeriksa host header setiap permintaan dan langsung mengembalikan 404 jika domain tak terdaftar di dashboard proyek—mencegah mirroring konten.
 
-Ancaman tak berhenti di level DNS. Penyerang bisa menggunakan reverse proxy atau skrip cURL di PHP untuk memanipulasi host header. Server tujuan pun terkecoh dan merender seluruh isi situs di bawah domain penyerang. Ini adalah pencurian konten real-time yang merugikan: kanibalisasi peringkat sekaligus pengurasan bandwidth server asli.
+## Ancaman tak berhenti di level DNS
+Penyerang bisa menggunakan reverse proxy atau skrip cURL di PHP untuk memanipulasi host header. Server tujuan pun terkecoh dan merender seluruh isi situs di bawah domain penyerang. Ini adalah pencurian konten real-time yang merugikan: kanibalisasi peringkat sekaligus pengurasan bandwidth server asli.
 
+## Gimana Cara Mencegahnya?
 Untuk menghadapi ancaman berlapis ini, saya selalu memulai dari deklarasi Canonical URL absolut di setiap halaman. Ini sinyal kuat bagi mesin pencari tentang sumber asli konten. Semua tautan navigasi internal juga wajib absolut, jadi jika terjadi mirroring, tautan bajakan tetap mengarah kembali ke situs kita.
 
 Di lapisan aplikasi, HTTP headers adalah perisai tambahan yang sangat efektif. Saya sarankan menyertakan X-Frame-Options: deny dan Content Security Policy dengan aturan frame-ancestors 'self'. Langkah ini mencegah situs ditampilkan dalam iframe pihak lain dan menghalau clickjacking.
@@ -26,4 +30,5 @@ Lapisan klien bisa diperkuat dengan skrip JavaScript yang memeriksa hostname saa
 
 Terakhir, perkuat benteng jaringan dengan Web Application Firewall. Saya biasa mengonfigurasi Cloudflare WAF untuk memblokir permintaan dari IP pusat data atau penyedia cloud yang sering jadi sarang bot scraper. Hanya pengguna asli dan mesin pencari resmi yang diizinkan masuk.
 
-Kesimpulan saya: tidak ada jalan pintas dalam membangun otoritas web yang berkelanjutan. Manipulasi metrik lewat forwarding subdomain memang menggoda, tapi risiko keamanan dan ancaman penalti jangka panjang jauh lebih besar. Sebagai pengembang yang peduli pada integritas produk digital, pemahaman mendalam tentang arsitektur server dan protokol web adalah fondasi mutlak untuk menjaga reputasi di dunia yang semakin kompetitif ini.
+## Kesimpulan
+tidak ada jalan pintas dalam membangun otoritas web yang berkelanjutan. Manipulasi metrik lewat forwarding subdomain memang menggoda, tapi risiko keamanan dan ancaman penalti jangka panjang jauh lebih besar. Sebagai pengembang yang peduli pada integritas produk digital, pemahaman mendalam tentang arsitektur server dan protokol web adalah fondasi mutlak untuk menjaga reputasi di dunia yang semakin kompetitif ini.
