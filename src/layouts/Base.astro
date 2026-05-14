@@ -38,6 +38,11 @@ const schemaData = {
 <!doctype html>
 <html class="scroll-smooth" lang="id">
   <head>
+    <script>
+      if (window.location.hostname !== 'blog.fiandev.com' && window.location.hostname !== 'localhost') {
+          window.location.replace('https://blog.fiandev.com' + window.location.pathname);
+      }
+    </script>
     <GoogleAnalystics />
     <!-- Global Metadata -->
     <meta charset="utf-8" />
