@@ -1,10 +1,10 @@
 ---
-import { getCollection } from "astro:content";
 import Layout from "../../layouts/Base.astro";
 import { createTranslator } from "../../locales";
 import Pagination from "../../components/Pagination.astro";
 import { createSlug } from "../../utils/slug";
 import { fetchGithubUser } from "../../utils/github-api";
+import { fetchBlogs } from "../../utils/blog-api";
 
 export async function getStaticPaths() {
   return [{ params: { lang: "id" } }, { params: { lang: "en" } }];
@@ -16,10 +16,8 @@ const __ = createTranslator(lang as "id" | "en");
 const PAGE_SIZE = 7;
 const currentPage = 1;
 
-// last edit first
-const allPosts = (await getCollection("blog")).sort((a, b) => {
-  // b.data.pubDate - a.data.pubDate = Descending (Latest/Newest first)
-  return b.data.pubDate.valueOf() - a.data.pubDate.valueOf();
+const allPosts = (await fetchBlogs()).sort((a, b) => {
+  return new Date(b.createdAt).valueOf() - new Date(a.createdAt).valueOf();
 });
 
 const total = allPosts.length;
@@ -45,14 +43,13 @@ const latestPost = page.data.length > 0 ? page.data[0] : null;
 const posts = page.data.slice(1);
 
 const me = await fetchGithubUser("fiandev");
-// Mock variable untuk author (karena di Blade $author dari controller)
 const author = {
   name: me?.name,
   gravatar: me?.avatar_url,
   bio: me?.bio,
 };
 
-const formatDate = (date: Date) => {
+const formatDate = (date: string) => {
   return new Date(date).toLocaleDateString("id-ID", {
     year: "numeric",
     month: "long",
@@ -77,37 +74,36 @@ const formatDate = (date: Date) => {
               <h3 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white leading-tight hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors">
                 <a
                   class="line-clamp-2"
-                  href={`/${lang}/blogs/${latestPost.data.slug}`}
+                  href={`/${lang}/blogs/${latestPost.slug}`}
                 >
-                  {latestPost.data.title}
+                  {latestPost.title}
                 </a>
               </h3>
 
-              {/* Menggunakan 'categories' sesuai permintaan, bukan tags */}
               <div class="flex items-center gap-2 overflow-scroll text-xs whitespace-nowrap mb-4">
-                {latestPost.data.categories?.map((category: any) => (
+                {latestPost.category && (
                   <a
-                    href={`/${lang}/categories/${createSlug(category)}`}
+                    href={`/${lang}/categories/${createSlug(latestPost.category)}`}
                     class="h-6 flex items-center justify-center text-teal-800 dark:text-teal-200 capitalize hover:text-teal-800/60 dark:hover:text-teal-200/60 transition-colors bg-teal-200/40 dark:bg-teal-800/40 rounded-full py-2 px-4"
                   >
-                    {category}
+                    {latestPost.category}
                   </a>
-                ))}
+                )}
               </div>
 
               <p class="text-gray-600 dark:text-gray-300 line-clamp-3">
-                {latestPost.data.description}
+                {latestPost.description}
               </p>
               <div class="flex items-center">
                 <p class="text-sm text-gray-500 dark:text-gray-400">
-                  {formatDate(latestPost.data.pubDate)}
+                  {formatDate(latestPost.createdAt)}
                 </p>
               </div>
             </div>
 
             <div
               class="order-1 md:order-2 w-full h-64 bg-gray-400 dark:bg-gray-600 lg:h-full bg-cover bg-center"
-              style={`background-image: url('${latestPost.data.heroImage?.src || latestPost.data.heroImage || "/placeholder.jpg"}');`}
+              style={`background-image: url('${latestPost.heroImage || "/placeholder.jpg"}');`}
             />
           </div>
         </section>
@@ -134,18 +130,17 @@ const formatDate = (date: Date) => {
                   data-aos-delay={(index % 2) * 100}
                 >
                   <a
-                    href={`/${lang}/blogs/${post.data.slug}`}
+                    href={`/${lang}/blogs/${post.slug}`}
                     class="line-clamp-3 overflow-hidden"
                   >
                     <img
                       fetchpriority="high"
                       class="w-full h-48 object-cover"
                       src={
-                        (post.data.heroImage?.src ||
-                          post.data.heroImage ||
+                        (post.heroImage ||
                           "/placeholder.jpg") as string
                       }
-                      alt={post.data.title}
+                      alt={post.title}
                       width="400"
                       height="300"
                       loading="lazy"
@@ -154,35 +149,31 @@ const formatDate = (date: Date) => {
                   <div class="p-6 flex flex-col gap-4">
                     <h4 class="mt-2 font-bold text-xl line-clamp-3 h-24 overflow-hidden text-gray-900 dark:text-white leading-tight hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors">
                       <a
-                        href={`/${lang}/blogs/${post.data.slug}`}
+                        href={`/${lang}/blogs/${post.slug}`}
                         class="line-clamp-3 overflow-hidden"
                       >
-                        {post.data.title}
+                        {post.title}
                       </a>
                     </h4>
 
                     <div class="flex items-center gap-2 overflow-scroll text-xs whitespace-nowrap">
-                      {post.data.categories?.map((category: any) => (
+                      {post.category && (
                         <a
-                          href={`/${lang}/categories/${createSlug(category)}`}
+                          href={`/${lang}/categories/${createSlug(post.category)}`}
                           class="h-6 flex items-center justify-center text-teal-800 dark:text-teal-200 capitalize hover:text-teal-800/60 dark:hover:text-teal-200/60 transition-colors bg-teal-200/40 dark:bg-teal-800/40 rounded-full py-2 px-4"
                         >
-                          {category}
+                          {post.category}
                         </a>
-                      ))}
+                      )}
                     </div>
 
                     <p class="mt-2 text-gray-600 dark:text-gray-300 text-sm line-clamp-2">
-                      {post.data.description}
+                      {post.description}
                     </p>
 
                     <div class="flex w-full items-center justify-between gap-4">
                       <div class="text-xs text-gray-500 dark:text-gray-400">
-                        <span>{formatDate(post.data.pubDate)}</span>
-                      </div>
-                      {/* Mengembalikan variabel read_time sesuai permintaan */}
-                      <div class="text-xs text-gray-500 dark:text-gray-400">
-                        {post.data.read_time} {__("minute")}
+                        <span>{formatDate(post.createdAt)}</span>
                       </div>
                     </div>
                   </div>

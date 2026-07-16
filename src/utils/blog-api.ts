@@ -1,5 +1,5 @@
-// const API_BASE_URL = "https://alfiansa.web.id/api";
-const API_BASE_URL = "http://localhost:4322/api";
+const API_BASE_URL = "https://alfiansa.web.id/api";
+// const API_BASE_URL = "http://localhost:4322/api";
 
 export interface BlogPost {
     id: string;
@@ -7,6 +7,7 @@ export interface BlogPost {
     slug: string;
     content: string;
     imageUrl: string;
+    heroImage?: string;
     description?: string;
     category: string;
     published: boolean;
@@ -23,22 +24,39 @@ interface ApiResponseDetail {
     data: BlogPost;
 }
 
+function refineImagePath (imageUrl: string): string {
+    return imageUrl.replace("../../", "/")
+}
+
 export const fetchBlogs = async (): Promise<BlogPost[]> => {
     try {
         let res = await fetch(`${API_BASE_URL}/public/blogs`);
-        let data: ApiResponseIndex = await res.json();
-        return data.data;
+      let json: ApiResponseIndex = await res.json();
+
+       return json.data.map(post => {
+          return {
+              ...post,
+              heroImage: refineImagePath(post.imageUrl),
+          };
+      });
     } catch (error) {
         return [];
     }
 };
 
-
 export const fetchBlog = async (slug: string): Promise<BlogPost> => {
     try {
         let res = await fetch(`${API_BASE_URL}/public/blogs/${slug}`);
         let data: ApiResponseDetail = await res.json();
-        return data.data;
+
+      console.log(JSON.stringify({
+          ...data.data,
+          heroImage: refineImagePath(data.data.imageUrl),
+      }, null, 2))
+        return {
+            ...data.data,
+            heroImage: refineImagePath(data.data.imageUrl),
+        };
     } catch (error) {
         return {} as BlogPost;
     }

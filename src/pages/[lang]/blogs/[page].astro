@@ -1,13 +1,13 @@
 ---
-import { getCollection } from "astro:content";
 import Layout from "../../../layouts/Base.astro";
 import { createTranslator } from "../../../locales";
 import Pagination from "../../../components/Pagination.astro";
 import { fetchGithubUser } from "../../../utils/github-api";
+import { fetchBlogs } from "../../../utils/blog-api";
 
 export async function getStaticPaths() {
   const langs = ["id", "en"];
-  const allPosts = await getCollection("blog");
+  const allPosts = await fetchBlogs();
   const PAGE_SIZE = 10;
   const total = allPosts.length;
   const lastPage = Math.ceil(total / PAGE_SIZE);
@@ -19,7 +19,7 @@ export async function getStaticPaths() {
       const end = start + PAGE_SIZE;
       const pageData = allPosts
         .slice(start, end)
-        .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+        .sort((a, b) => new Date(b.createdAt).valueOf() - new Date(a.createdAt).valueOf());
 
       paths.push({
         params: { lang, page: pageNum.toString() },
@@ -71,18 +71,18 @@ const generatePageNumbers = (current: number, total: number) => {
   return result;
 };
 
-const allPosts = (await getCollection("blog")).sort(
-  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+const allPosts = (await fetchBlogs()).sort(
+  (a, b) => new Date(b.createdAt).valueOf() - new Date(a.createdAt).valueOf(),
 );
 
 const categories = new Set();
 allPosts.forEach((post) => {
-  post.data.categories?.forEach((category) => {
-    categories.add(category);
-  });
+  if (post.category) {
+    categories.add(post.category);
+  }
 });
 
-const formatDate = (date: Date) => {
+const formatDate = (date: string) => {
   return new Date(date).toLocaleDateString(lang, {
     year: "numeric",
     month: "short",
@@ -91,7 +91,6 @@ const formatDate = (date: Date) => {
 };
 
 const me = await fetchGithubUser("fiandev");
-// Mock variable untuk author (karena di Blade $author dari controller)
 const author = {
   name: me?.name,
   gravatar: me?.avatar_url,
@@ -161,11 +160,10 @@ const pageNumbers = generatePageNumbers(page.currentPage, page.lastPage);
     {
       page.data.map((post) => (
         <a
-          href={`/${lang}/blogs/${post.data.slug}`}
-          class="line-clamp-3 overflow-hidden"
+          href={`/${lang}/blogs/${post.slug}`}
           class="block group post-item transition-all duration-300 ease-in-out"
-          data-title={post.data.title.toLowerCase()}
-          data-categories={post.data.categories?.join(",") || ""}
+          data-title={post.title.toLowerCase()}
+          data-categories={post.category || ""}
         >
           <article class="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 border border-gray-100 dark:border-gray-700">
             <div class="flex flex-col md:flex-row">
@@ -173,13 +171,12 @@ const pageNumbers = generatePageNumbers(page.currentPage, page.lastPage);
                 <img
                   fetchpriority="high"
                   src={
-                    (post.data.heroImage?.src ||
-                      post.data.heroImage ||
+                    (post.heroImage ||
                       "/placeholder.jpg") as string
                   }
-                  alt={post.data.title}
-                  width={post.data.heroImage?.width}
-                  height={post.data.heroImage?.height}
+                  alt={post.title}
+                  width="400"
+                  height="300"
                   loading="lazy"
                   class="w-full h-48 md:h-full object-cover"
                 />
@@ -200,28 +197,28 @@ const pageNumbers = generatePageNumbers(page.currentPage, page.lastPage);
                   </span>
                   <span class="text-gray-400 dark:text-gray-500">•</span>
                   <time
-                    datetime={post.data.pubDate.toISOString()}
+                    datetime={new Date(post.createdAt).toISOString()}
                     class="text-gray-500 dark:text-gray-400"
                   >
-                    {formatDate(post.data.pubDate)}
+                    {formatDate(post.createdAt)}
                   </time>
                 </div>
 
                 <h2 class="text-xl md:text-2xl font-bold font-sans text-gray-900 dark:text-white group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors mb-3 line-clamp-2">
-                  {post.data.title}
+                  {post.title}
                 </h2>
 
                 <p class="text-gray-600 dark:text-gray-300 mb-4 line-clamp-2">
-                  {post.data.description}
+                  {post.description}
                 </p>
 
                 <div class="flex flex-wrap items-center justify-between">
                   <div class="flex flex-wrap gap-2">
-                    {post.data.categories?.map((categoryName) => (
+                    {post.category && (
                       <span class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-2 py-1 rounded-full text-xs font-medium">
-                        {categoryName}
+                        {post.category}
                       </span>
-                    ))}
+                    )}
                   </div>
                   <div class="text-sm text-gray-500 dark:text-gray-400">
                     5 min {__("read")}

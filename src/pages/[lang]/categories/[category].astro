@@ -1,28 +1,26 @@
 ---
-import { getCollection } from "astro:content";
 import Layout from "../../../layouts/Base.astro";
 import { createTranslator } from "../../../locales";
 import { createSlug } from "../../../utils/slug";
 import Pagination from "../../../components/Pagination.astro";
+import { fetchBlogs } from "../../../utils/blog-api";
 
 export async function getStaticPaths() {
-  const posts = await getCollection("blog");
-  const allCategories = posts.flatMap((post) => post.data.categories || []);
+  const posts = await fetchBlogs();
+  const allCategories = posts.flatMap((post) => post.category ? [post.category] : []);
   const uniqueCategories = [...new Set(allCategories)];
   const languages = ["id", "en"];
 
-  // Generate path untuk setiap kombinasi Bahasa + Kategori
   return languages.flatMap((lang) => {
     return uniqueCategories.map((category) => {
       const categorySlug = createSlug(category as string);
 
       const filteredPosts = posts
         .filter((post) => {
-          const postCats = post.data.categories || [];
-          const postSlugs = postCats.map((c: string) => createSlug(c));
-          return postSlugs.includes(categorySlug);
+          const postCatSlug = post.category ? createSlug(post.category) : "";
+          return postCatSlug === categorySlug;
         })
-        .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+        .sort((a, b) => new Date(b.createdAt).valueOf() - new Date(a.createdAt).valueOf());
 
       return {
         params: { lang, category: categorySlug },
@@ -57,14 +55,13 @@ const page = {
     next:
       lastPage > 1
         ? `/${lang}/categories/${Astro.params.category}/page/2`
-        : null, // Assuming we create [category]/page/[page]
+        : null,
   },
 };
 
-// Helper untuk menjaga link tetap berada di bahasa yang sama
 const localLink = (path: string) => `/${lang}${path}`;
 
-const formatDate = (date: Date) => {
+const formatDate = (date: string) => {
   return new Date(date).toLocaleDateString("id-ID", {
     year: "numeric",
     month: "long",
@@ -96,15 +93,14 @@ const formatDate = (date: Date) => {
               data-aos="fade-up"
               data-aos-delay={(index % 2) * 100}
             >
-              <a href={localLink(`/blogs/${post.data.slug}`)}>
+              <a href={localLink(`/blogs/${post.slug}`)}>
                 <img
                   class="w-full h-48 object-cover"
                   src={
-                    (post.data.heroImage?.src ||
-                      post.data.heroImage ||
+                    (post.heroImage ||
                       "/placeholder.jpg") as string
                   }
-                  alt={post.data.title}
+                  alt={post.title}
                   width="400"
                   height="300"
                   loading="lazy"
@@ -112,32 +108,29 @@ const formatDate = (date: Date) => {
               </a>
               <div class="p-6 flex flex-col gap-4">
                 <h4 class="mt-2 font-bold text-xl line-clamp-3 h-24 overflow-hidden text-gray-900 dark:text-white leading-tight hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors">
-                  <a href={localLink(`/blogs/${post.data.slug}`)}>
-                    {post.data.title}
+                  <a href={localLink(`/blogs/${post.slug}`)}>
+                    {post.title}
                   </a>
                 </h4>
 
                 <div class="flex items-center gap-2 overflow-scroll text-xs whitespace-nowrap scrollbar-hide">
-                  {post.data.categories?.map((cat: string) => (
+                  {post.category && (
                     <a
-                      href={localLink(`/categories/${createSlug(cat)}`)}
+                      href={localLink(`/categories/${createSlug(post.category)}`)}
                       class="h-6 flex items-center justify-center text-teal-800 dark:text-teal-200 capitalize hover:text-teal-800/60 dark:hover:text-teal-200/60 transition-colors bg-teal-200/40 dark:bg-teal-800/40 rounded-full py-2 px-4"
                     >
-                      {cat}
+                      {post.category}
                     </a>
-                  ))}
+                  )}
                 </div>
 
                 <p class="mt-2 text-gray-600 dark:text-gray-300 text-sm line-clamp-2">
-                  {post.data.description}
+                  {post.description}
                 </p>
 
                 <div class="flex w-full items-center justify-between gap-4 mt-auto">
                   <div class="text-xs text-gray-500 dark:text-gray-400">
-                    <span>{formatDate(post.data.pubDate)}</span>
-                  </div>
-                  <div class="text-xs text-gray-500 dark:text-gray-400">
-                    {post.data.read_time} read
+                    <span>{formatDate(post.createdAt)}</span>
                   </div>
                 </div>
               </div>

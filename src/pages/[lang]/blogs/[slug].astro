@@ -3,7 +3,7 @@ import { marked } from "marked";
 import BlogPost from "../../../layouts/BlogPost.astro";
 import { createTranslator } from "../../../locales";
 import { fetchGithubUser } from "../../../utils/github-api";
-import { fetchBlogs, fetchBlog, type BlogPost } from "../../../utils/blog-api";
+import { fetchBlogs, fetchBlog } from "../../../utils/blog-api";
 
 export async function getStaticPaths() {
     const posts = await fetchBlogs();
@@ -30,7 +30,7 @@ const me = await fetchGithubUser("fiandev");
 const __ = createTranslator(lang as "id" | "en");
 const currentUrl = Astro.url;
 
-const heroImage = post.imageUrl ? { src: post.imageUrl } : undefined;
+const heroImage = post.heroImage ? { src: post.heroImage } : undefined;
 const categories = post.category ? [post.category] : [];
 const pubDate = new Date(post.createdAt);
 const updatedDate = post.updatedAt ? new Date(post.updatedAt) : undefined;
