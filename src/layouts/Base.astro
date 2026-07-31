@@ -8,6 +8,7 @@ import GoogleAnalystics from "../components/includes/GoogleAnalystics.astro";
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const socialImageURL = new URL("/banner.png", Astro.site);
 const siteName = SITE_TITLE;
+const hostname = "blog.alfiansa.web.id";
 
 // Schema.org JSON-LD
 const schemaData = {
@@ -39,8 +40,8 @@ const schemaData = {
 <html class="scroll-smooth" lang="id">
   <head>
     <script>
-      if (window.location.hostname !== 'blog.fiandev.com' && window.location.hostname !== 'localhost') {
-          window.location.replace('https://blog.fiandev.com' + window.location.pathname);
+      if (window.location.hostname !== hostname && window.location.hostname !== 'localhost') {
+          window.location.replace(`https://${hostname}/${window.location.pathname}`);
       }
     </script>
     <GoogleAnalystics />

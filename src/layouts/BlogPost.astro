@@ -30,6 +30,7 @@ const socialImageURL = new URL(
   Astro.site,
 );
 const siteName = SITE_TITLE;
+const hostname = "blog.alfiansa.web.id";
 
 // Schema.org JSON-LD
 const schemaData = {
@@ -63,8 +64,8 @@ const schemaData = {
 <html lang="id" class="scroll-smooth">
   <head>
     <script>
-      if (window.location.hostname !== 'blog.fiandev.com' && window.location.hostname !== 'localhost') {
-          window.location.replace('https://blog.fiandev.com' + window.location.pathname);
+      if (window.location.hostname !== hostname && window.location.hostname !== 'localhost') {
+          window.location.replace(`https://${hostname}/${window.location.pathname}`);
       }
     </script>
     <GoogleAnalystics />
