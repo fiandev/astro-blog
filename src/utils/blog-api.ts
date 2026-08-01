@@ -24,21 +24,21 @@ interface ApiResponseDetail {
     data: BlogPost;
 }
 
-function refineImagePath (imageUrl: string): string {
+function refineImagePath(imageUrl: string): string {
     return imageUrl.replace("../../", "/")
 }
 
 export const fetchBlogs = async (): Promise<BlogPost[]> => {
     try {
         let res = await fetch(`${API_BASE_URL}/public/blogs`);
-      let json: ApiResponseIndex = await res.json();
+        let json: ApiResponseIndex = await res.json();
 
-       return json.data.map(post => {
-          return {
-              ...post,
-              heroImage: refineImagePath(post.imageUrl),
-          };
-      });
+        return json.data.map(post => {
+            return {
+                ...post,
+                heroImage: refineImagePath(post.imageUrl),
+            };
+        });
     } catch (error) {
         return [];
     }
@@ -49,10 +49,6 @@ export const fetchBlog = async (slug: string): Promise<BlogPost> => {
         let res = await fetch(`${API_BASE_URL}/public/blogs/${slug}`);
         let data: ApiResponseDetail = await res.json();
 
-      console.log(JSON.stringify({
-          ...data.data,
-          heroImage: refineImagePath(data.data.imageUrl),
-      }, null, 2))
         return {
             ...data.data,
             heroImage: refineImagePath(data.data.imageUrl),

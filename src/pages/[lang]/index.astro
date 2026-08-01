@@ -59,9 +59,7 @@ const formatDate = (date: string) => {
 ---
 
 <Layout title="Home">
-  <div
-    class="container mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-8 py-8 md:py-12"
-  >
+  <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 md:py-12">
     {/* Featured Post Section */}
     {
       latestPost && (
@@ -136,10 +134,7 @@ const formatDate = (date: string) => {
                     <img
                       fetchpriority="high"
                       class="w-full h-48 object-cover"
-                      src={
-                        (post.heroImage ||
-                          "/placeholder.jpg") as string
-                      }
+                      src={(post.heroImage || "/placeholder.jpg") as string}
                       alt={post.title}
                       width="400"
                       height="300"
