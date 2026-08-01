@@ -5,43 +5,30 @@ import { createSlug } from "../../../utils/slug";
 import Pagination from "../../../components/Pagination.astro";
 import { fetchBlogs } from "../../../utils/blog-api";
 
-export async function getStaticPaths() {
-  const posts = await fetchBlogs();
-  const allCategories = posts.flatMap((post) => post.category ? [post.category] : []);
-  const uniqueCategories = [...new Set(allCategories)];
-  const languages = ["id", "en"];
+export const prerender = false;
 
-  return languages.flatMap((lang) => {
-    return uniqueCategories.map((category) => {
-      const categorySlug = createSlug(category as string);
-
-      const filteredPosts = posts
-        .filter((post) => {
-          const postCatSlug = post.category ? createSlug(post.category) : "";
-          return postCatSlug === categorySlug;
-        })
-        .sort((a, b) => new Date(b.createdAt).valueOf() - new Date(a.createdAt).valueOf());
-
-      return {
-        params: { lang, category: categorySlug },
-        props: {
-          categoryName: category,
-          posts: filteredPosts,
-        },
-      };
-    });
-  });
-}
-
-const { categoryName, posts: allPosts } = Astro.props;
-const { lang } = Astro.params;
+const { lang, category: categorySlug } = Astro.params;
 const __ = createTranslator(lang as "id" | "en");
 
+const allPosts = await fetchBlogs();
+const matchedPost = allPosts.find((post) => {
+  const postCatSlug = post.category ? createSlug(post.category) : "";
+  return postCatSlug === categorySlug;
+});
+const categoryName = matchedPost?.category ?? "";
+
+const categoryPosts = allPosts
+  .filter((post) => {
+    const postCatSlug = post.category ? createSlug(post.category) : "";
+    return postCatSlug === categorySlug;
+  })
+  .sort((a, b) => new Date(b.createdAt).valueOf() - new Date(a.createdAt).valueOf());
+
 const PAGE_SIZE = 6;
-const total = allPosts.length;
+const total = categoryPosts.length;
 const lastPage = Math.ceil(total / PAGE_SIZE);
 
-const posts = allPosts.slice(0, PAGE_SIZE);
+const posts = categoryPosts.slice(0, PAGE_SIZE);
 
 const page = {
   currentPage: 1,
@@ -54,7 +41,7 @@ const page = {
     prev: null,
     next:
       lastPage > 1
-        ? `/${lang}/categories/${Astro.params.category}/page/2`
+        ? `/${lang}/categories/${categorySlug}/page/2`
         : null,
   },
 };

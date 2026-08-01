@@ -1,27 +1,21 @@
 // @ts-check
 import mdx from "@astrojs/mdx";
-import sitemap from "@astrojs/sitemap";
+import node from "@astrojs/node";
+// sitemap disabled - using custom dynamic routes (sitemap_index.xml + sitemap-N.xml)
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
 
 // https://astro.build/config
 export default defineConfig({
-  site: "https://blog.fiandev.com",
+  site: "https://blog.alfiansa.web.id",
   integrations: [
     mdx(),
-    sitemap({
-      i18n: {
-        defaultLocale: "id",
-        locales: {
-          en: "en",
-          id: "id",
-        },
-      },
-      filter: (page) => page !== "https://blog.fiandev.com/",
-    }),
   ],
   vite: {
     plugins: [tailwindcss()],
   },
-  output: "static",
+  output: "server",
+  adapter: node({
+    mode: "standalone",
+  }),
 });

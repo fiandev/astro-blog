@@ -3,27 +3,17 @@ import { marked } from "marked";
 import BlogPost from "../../../layouts/BlogPost.astro";
 import { createTranslator } from "../../../locales";
 import { fetchGithubUser } from "../../../utils/github-api";
-import { fetchBlogs, fetchBlog } from "../../../utils/blog-api";
+import { fetchBlog } from "../../../utils/blog-api";
 
-export async function getStaticPaths() {
-    const posts = await fetchBlogs();
-    const languages = ["id", "en"];
-
-    return languages.flatMap((lang) =>
-        posts.map((post) => ({
-            params: {
-                lang,
-                slug: post.slug,
-            },
-            props: { slug: post.slug },
-        })),
-    );
-}
+export const prerender = false;
 
 const { lang, slug } = Astro.params;
-const { slug: postSlug } = Astro.props;
 
-const post = await fetchBlog(postSlug);
+if (slug && /^\d+$/.test(slug)) {
+  return Astro.redirect(`/${lang}/blogs/page/${slug}`);
+}
+
+const post = await fetchBlog(slug!);
 
 const me = await fetchGithubUser("fiandev");
 
@@ -32,7 +22,7 @@ const currentUrl = Astro.url;
 
 const heroImage = post.heroImage ? { src: post.heroImage } : undefined;
 const categories = post.category ? [post.category] : [];
-const pubDate = new Date(post.createdAt);
+const pubDate = post.createdAt ? new Date(post.createdAt) : new Date();
 const updatedDate = post.updatedAt ? new Date(post.updatedAt) : undefined;
 const contentHtml = marked.parse(post.content || "") as string;
 ---

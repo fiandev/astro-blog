@@ -6,9 +6,7 @@ import { createSlug } from "../../utils/slug";
 import { fetchGithubUser } from "../../utils/github-api";
 import { fetchBlogs } from "../../utils/blog-api";
 
-export async function getStaticPaths() {
-  return [{ params: { lang: "id" } }, { params: { lang: "en" } }];
-}
+export const prerender = false;
 
 const lang = Astro.params.lang;
 const __ = createTranslator(lang as "id" | "en");
@@ -129,11 +127,11 @@ const formatDate = (date: string) => {
                 >
                   <a
                     href={`/${lang}/blogs/${post.slug}`}
-                    class="line-clamp-3 overflow-hidden"
+                    class="line-clamp-3 overflow-hidden max-h-48"
                   >
                     <img
                       fetchpriority="high"
-                      class="w-full h-48 object-cover"
+                      class="w-full h-full object-cover"
                       src={(post.heroImage || "/placeholder.jpg") as string}
                       alt={post.title}
                       width="400"

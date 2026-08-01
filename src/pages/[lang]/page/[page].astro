@@ -6,27 +6,10 @@ import { createSlug } from "../../../utils/slug";
 import { fetchGithubUser } from "../../../utils/github-api";
 import { fetchBlogs, type BlogPost } from "../../../utils/blog-api";
 
-export async function getStaticPaths() {
-  const langs = ["id", "en"];
-  const allPosts = await fetchBlogs();
-  const PAGE_SIZE = 6;
-  const total = allPosts.length;
-  const lastPage = Math.ceil(total / PAGE_SIZE);
-
-  const paths = [];
-  for (const lang of langs) {
-    for (let page = 2; page <= lastPage; page++) {
-      paths.push({
-        params: { lang, page: page.toString() },
-        props: { pageNumber: page },
-      });
-    }
-  }
-  return paths;
-}
+export const prerender = false;
 
 const { lang, page: pageParam } = Astro.params;
-const pageNumber = parseInt(pageParam);
+const pageNumber = parseInt(pageParam!);
 const __ = createTranslator(lang as "id" | "en");
 
 const PAGE_SIZE = 7;
@@ -153,14 +136,13 @@ const formatDate = (date: Date) =>
                 >
                   <a
                     href={`/${lang}/blogs/${post.slug}`}
-                    class="line-clamp-3 overflow-hidden"
+                    class="line-clamp-3 max-h-48 overflow-hidden"
                   >
                     <img
                       fetchpriority="high"
-                      class="w-full h-48 object-cover"
+                      class="w-full h-full object-fill"
                       src={
-                        (post.heroImage?.src ||
-                          "/placeholder.jpg") as string
+                        (post.heroImage?.src || "/placeholder.jpg") as string
                       }
                       alt={post.title}
                       width="400"

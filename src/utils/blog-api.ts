@@ -10,6 +10,7 @@ export interface BlogPost {
     heroImage?: string;
     description?: string;
     category: string;
+    author?: string;
     published: boolean;
     createdAt: string;
     updatedAt: string;

@@ -1,50 +1,38 @@
 ---
-import Layout from "../../../layouts/Base.astro";
-import { createTranslator } from "../../../locales";
-import Pagination from "../../../components/Pagination.astro";
-import { fetchGithubUser } from "../../../utils/github-api";
-import { fetchBlogs } from "../../../utils/blog-api";
+import Layout from "../../../../layouts/Base.astro";
+import { createTranslator } from "../../../../locales";
+import Pagination from "../../../../components/Pagination.astro";
+import { fetchGithubUser } from "../../../../utils/github-api";
+import { fetchBlogs } from "../../../../utils/blog-api";
 
-export async function getStaticPaths() {
-  const langs = ["id", "en"];
-  const allPosts = await fetchBlogs();
-  const PAGE_SIZE = 10;
-  const total = allPosts.length;
-  const lastPage = Math.ceil(total / PAGE_SIZE);
+export const prerender = false;
 
-  const paths = [];
-  for (const lang of langs) {
-    for (let pageNum = 1; pageNum <= lastPage; pageNum++) {
-      const start = (pageNum - 1) * PAGE_SIZE;
-      const end = start + PAGE_SIZE;
-      const pageData = allPosts
-        .slice(start, end)
-        .sort((a, b) => new Date(b.createdAt).valueOf() - new Date(a.createdAt).valueOf());
+const { lang, page: pageParam } = Astro.params;
+const currentPage = parseInt(pageParam!);
 
-      paths.push({
-        params: { lang, page: pageNum.toString() },
-        props: {
-          page: {
-            currentPage: pageNum,
-            lastPage,
-            total,
-            start,
-            end: Math.min(end, total) - 1,
-            data: pageData,
-            url: {
-              prev: pageNum > 1 ? `/${lang}/blogs/${pageNum - 1}` : null,
-              next: pageNum < lastPage ? `/${lang}/blogs/${pageNum + 1}` : null,
-            },
-          },
-        },
-      });
-    }
-  }
-  return paths;
-}
+const PAGE_SIZE = 10;
+const allPosts = (await fetchBlogs()).sort(
+  (a, b) => new Date(b.createdAt).valueOf() - new Date(a.createdAt).valueOf(),
+);
+const total = allPosts.length;
+const lastPage = Math.ceil(total / PAGE_SIZE);
+const start = (currentPage - 1) * PAGE_SIZE;
+const end = start + PAGE_SIZE;
+const pageData = allPosts.slice(start, end);
 
-const { page } = Astro.props;
-const { lang } = Astro.params;
+const page = {
+  currentPage,
+  lastPage,
+  total,
+  start,
+  end: Math.min(end, total) - 1,
+  data: pageData,
+  url: {
+    prev: currentPage > 1 ? `/${lang}/blogs/page/${currentPage - 1}` : null,
+    next:
+      currentPage < lastPage ? `/${lang}/blogs/page/${currentPage + 1}` : null,
+  },
+};
 const __ = createTranslator(lang as "id" | "en");
 
 const generatePageNumbers = (current: number, total: number) => {
@@ -70,10 +58,6 @@ const generatePageNumbers = (current: number, total: number) => {
 
   return result;
 };
-
-const allPosts = (await fetchBlogs()).sort(
-  (a, b) => new Date(b.createdAt).valueOf() - new Date(a.createdAt).valueOf(),
-);
 
 const categories = new Set();
 allPosts.forEach((post) => {
@@ -167,18 +151,15 @@ const pageNumbers = generatePageNumbers(page.currentPage, page.lastPage);
         >
           <article class="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 border border-gray-100 dark:border-gray-700">
             <div class="flex flex-col md:flex-row">
-              <div class="w-full md:w-1/3">
+              <div class="w-full h-48 md:h-52 md:w-1/3">
                 <img
                   fetchpriority="high"
-                  src={
-                    (post.heroImage ||
-                      "/placeholder.jpg") as string
-                  }
+                  src={(post.heroImage || "/placeholder.jpg") as string}
                   alt={post.title}
                   width="400"
                   height="300"
                   loading="lazy"
-                  class="w-full h-48 md:h-full object-cover"
+                  class="w-full h-full object-cover"
                 />
               </div>
 
@@ -266,7 +247,7 @@ const pageNumbers = generatePageNumbers(page.currentPage, page.lastPage);
                 datetime={new Date().toISOString()}
                 class="text-gray-500 dark:text-gray-400"
               >
-                {formatDate(new Date())}
+                {formatDate(new Date().toISOString())}
               </time>
             </div>
 
@@ -313,7 +294,7 @@ const pageNumbers = generatePageNumbers(page.currentPage, page.lastPage);
   </div>
 
   <div class="mt-8">
-    <Pagination page={page} lang={lang} basePath="/blogs" />
+    <Pagination page={page} lang={lang} basePath="/blogs/page" />
   </div>
 </Layout>
 
@@ -354,7 +335,6 @@ const pageNumbers = generatePageNumbers(page.currentPage, page.lastPage);
         noResults.classList.toggle("hidden", visibleCount > 0);
       }
 
-      // Update URL without reload
       const url = new URL(window.location.href);
       if (query) url.searchParams.set("search", query);
       else url.searchParams.delete("search");
@@ -368,7 +348,6 @@ const pageNumbers = generatePageNumbers(page.currentPage, page.lastPage);
     searchInput.addEventListener("input", filterPosts);
     categorySelect.addEventListener("change", filterPosts);
 
-    // Initial check from URL
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.has("search")) {
       (searchInput as HTMLInputElement).value = urlParams.get("search")!;
@@ -377,16 +356,12 @@ const pageNumbers = generatePageNumbers(page.currentPage, page.lastPage);
       (categorySelect as HTMLSelectElement).value = urlParams.get("category")!;
     }
 
-    // Run once on load if params exist
     if (urlParams.has("search") || urlParams.has("category")) {
       filterPosts();
     }
   }
 
-  // Run on initial load
   initFilter();
-
-  // Support for View Transitions (if you enable them later)
   document.addEventListener("astro:page-load", initFilter);
 </script>
 
@@ -460,7 +435,9 @@ const pageNumbers = generatePageNumbers(page.currentPage, page.lastPage);
                 </span>
               ) : (
                 <a
-                  href={num === 1 ? `/${lang}/blogs` : `/${lang}/blogs/${num}`}
+                  href={
+                    num === 1 ? `/${lang}/blogs` : `/${lang}/blogs/page/${num}`
+                  }
                   class="relative inline-flex items-center px-4 py-2 text-sm font-semibold border border-gray-300"
                 >
                   {num}
