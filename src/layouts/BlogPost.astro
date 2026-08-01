@@ -63,9 +63,14 @@ const schemaData = {
 <!doctype html>
 <html lang="id" class="scroll-smooth">
   <head>
-    <script>
-      if (window.location.hostname !== hostname && window.location.hostname !== 'localhost') {
-          window.location.replace(`https://${hostname}/${window.location.pathname}`);
+    <script define:vars={{ hostname }}>
+      if (
+        window.location.hostname !== hostname &&
+        window.location.hostname !== "localhost"
+      ) {
+        window.location.replace(
+          `https://${hostname}${window.location.pathname}`,
+        );
       }
     </script>
     <GoogleAnalystics />

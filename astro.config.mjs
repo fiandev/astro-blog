@@ -1,9 +1,8 @@
 // @ts-check
 import mdx from "@astrojs/mdx";
-import node from "@astrojs/node";
-// sitemap disabled - using custom dynamic routes (sitemap_index.xml + sitemap-N.xml)
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
+import netlify from '@astrojs/netlify';
 
 // https://astro.build/config
 export default defineConfig({
@@ -15,7 +14,5 @@ export default defineConfig({
     plugins: [tailwindcss()],
   },
   output: "server",
-  adapter: node({
-    mode: "standalone",
-  }),
+  adapter: netlify(),
 });
