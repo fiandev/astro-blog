@@ -3,7 +3,7 @@ import { fetchBlogs } from "../utils/blog-api";
 
 export const prerender = false;
 
-const SITE_URL = "https://blog.alfiansa.web.id";
+const SITE_URL = "https://blog.fiandev.com";
 const URLS_PER_SITEMAP = 50;
 
 const staticPages = [
@@ -12,8 +12,8 @@ const staticPages = [
   { path: "/id", priority: "0.9", changefreq: "daily" },
   { path: "/en/about", priority: "0.7", changefreq: "monthly" },
   { path: "/id/about", priority: "0.7", changefreq: "monthly" },
-  { path: "/en/blogs", priority: "0.9", changefreq: "daily" },
-  { path: "/id/blogs", priority: "0.9", changefreq: "daily" },
+  { path: "/en/blogs", priority: "0.8", changefreq: "weekly" },
+  { path: "/id/blogs", priority: "0.8", changefreq: "weekly" },
 ];
 
 function formatDate(date: string | Date): string {
@@ -81,14 +81,14 @@ export const GET: APIRoute = async ({ params, url }) => {
     allUrls.push({
       loc: `${SITE_URL}/id/blogs/${blog.slug}`,
       lastmod: formatDate(blog.updatedAt || blog.createdAt),
-      priority: "0.8",
-      changefreq: "weekly",
+      priority: "0.9",
+      changefreq: "daily",
     });
     allUrls.push({
       loc: `${SITE_URL}/en/blogs/${blog.slug}`,
       lastmod: formatDate(blog.updatedAt || blog.createdAt),
-      priority: "0.8",
-      changefreq: "weekly",
+      priority: "0.9",
+      changefreq: "daily",
     });
   }
 

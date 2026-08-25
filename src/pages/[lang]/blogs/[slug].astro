@@ -22,6 +22,7 @@ const currentUrl = Astro.url;
 
 const heroImage = post.heroImage ? { src: post.heroImage } : undefined;
 const categories = post.category ? [post.category] : [];
+const description = post.description || "";
 const pubDate = post.createdAt ? new Date(post.createdAt) : new Date();
 const updatedDate = post.updatedAt ? new Date(post.updatedAt) : undefined;
 const contentHtml = marked.parse(post.content || "") as string;
@@ -29,7 +30,7 @@ const contentHtml = marked.parse(post.content || "") as string;
 
 <BlogPost
     title={post.title}
-    description=""
+    description={description}
     pubDate={pubDate}
     updatedDate={updatedDate}
     heroImage={heroImage}
